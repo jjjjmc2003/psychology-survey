@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +19,7 @@ const AuthPage: React.FC = () => {
   const { toast } = useToast();
 
   // Admin password - in production, this should be in environment variables
-  const ADMIN_SIGNUP_PASSWORD = 'research-admin-2024';
+  const ADMIN_SIGNUP_PASSWORD = 'Buttercup10!';
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
