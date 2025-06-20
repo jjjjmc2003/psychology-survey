@@ -25,9 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Sending admin invitation email to:', email);
 
-    // Use the app URL instead of Supabase URL
+    // Use the app URL for the signup page
     const siteUrl = "https://survey-switcheroo-magic.lovable.app";
-    const inviteUrl = `${siteUrl}/admin/auth?token=${invitationToken}&email=${encodeURIComponent(email)}`;
+    const signupUrl = `${siteUrl}/admin/auth`;
 
     const emailResponse = await resend.emails.send({
       from: "Psychology Research <onboarding@resend.dev>",
@@ -40,18 +40,32 @@ const handler = async (req: Request): Promise<Response> => {
             <h2 style="color: #495057; margin-top: 0;">You've been invited to be an admin</h2>
             <p style="color: #6c757d; line-height: 1.6;">
               You have been invited to join the Psychology Research Dashboard as an administrator.
-              Click the button below to accept your invitation and set up your admin account.
+              To accept your invitation, please follow these steps:
             </p>
+            <ol style="color: #6c757d; line-height: 1.6;">
+              <li>Click the link below to go to the signup page</li>
+              <li>Enter your email: <strong>${email}</strong></li>
+              <li>Copy and paste your invitation token (shown below)</li>
+              <li>Complete the registration form</li>
+            </ol>
+            
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${inviteUrl}" 
+              <a href="${signupUrl}" 
                  style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
-                Accept Invitation
+                Go to Signup Page
               </a>
             </div>
-            <p style="color: #6c757d; font-size: 14px;">
-              Or copy and paste this URL into your browser:<br>
-              <span style="word-break: break-all; color: #007bff;">${inviteUrl}</span>
-            </p>
+            
+            <div style="background-color: #ffffff; border: 2px solid #007bff; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center;">
+              <h3 style="color: #007bff; margin-top: 0;">Your Invitation Token</h3>
+              <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 18px; font-weight: bold; color: #333; letter-spacing: 1px; word-break: break-all;">
+                ${invitationToken}
+              </div>
+              <p style="color: #6c757d; font-size: 14px; margin-bottom: 0;">
+                Copy this token exactly as shown above
+              </p>
+            </div>
+            
             <p style="color: #dc3545; font-size: 14px; margin-top: 20px;">
               ⚠️ This invitation will expire in 7 days and can only be used once.
             </p>

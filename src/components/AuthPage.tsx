@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,30 +22,7 @@ const AuthPage: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [invitationToken, setInvitationToken] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
-  const [hasInvitation, setHasInvitation] = useState(false);
   const { toast } = useToast();
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tokenFromUrl = urlParams.get('token');
-    const emailFromUrl = urlParams.get('email');
-    
-    if (tokenFromUrl && emailFromUrl) {
-      setInvitationToken(tokenFromUrl);
-      setEmail(decodeURIComponent(emailFromUrl));
-      setActiveTab('signup');
-      setHasInvitation(true);
-      
-      toast({
-        title: "Invitation found",
-        description: "Please complete your registration using the invitation details.",
-      });
-      
-      // Clean up URL
-      const newUrl = window.location.pathname;
-      window.history.replaceState({}, document.title, newUrl);
-    }
-  }, [toast]);
 
   const isAdminEmail = (email: string): boolean => {
     const lowerEmail = email.toLowerCase();
@@ -138,7 +115,6 @@ const AuthPage: React.FC = () => {
         setLastName('');
         setPassword('');
         setInvitationToken('');
-        setHasInvitation(false);
         setActiveTab('signin');
       }
     } catch (error: any) {
@@ -206,7 +182,7 @@ const AuthPage: React.FC = () => {
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin" className="flex items-center gap-2" disabled={hasInvitation}>
+              <TabsTrigger value="signin" className="flex items-center gap-2">
                 <LogIn className="w-4 h-4" />
                 Sign In
               </TabsTrigger>
@@ -215,20 +191,6 @@ const AuthPage: React.FC = () => {
                 Register
               </TabsTrigger>
             </TabsList>
-
-            {hasInvitation && (
-              <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-start">
-                  <Shield className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-blue-800 mb-1">Invitation Detected</h3>
-                    <p className="text-sm text-blue-700">
-                      Complete the registration form below to accept your admin invitation.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
@@ -313,7 +275,6 @@ const AuthPage: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your admin email"
-                    disabled={hasInvitation}
                     required
                   />
                   <p className="text-xs text-gray-500">
@@ -345,12 +306,11 @@ const AuthPage: React.FC = () => {
                     type="text"
                     value={invitationToken}
                     onChange={(e) => setInvitationToken(e.target.value)}
-                    placeholder="Enter your invitation token"
-                    disabled={hasInvitation}
+                    placeholder="Paste your invitation token here"
                     required
                   />
                   <p className="text-xs text-gray-500">
-                    {hasInvitation ? "Token automatically filled from invitation" : "Contact your research administrator for an invitation token"}
+                    Copy and paste the token from your invitation email
                   </p>
                 </div>
                 <Button 
@@ -370,8 +330,8 @@ const AuthPage: React.FC = () => {
               <div>
                 <h3 className="font-semibold text-green-800 mb-1">Secure Access</h3>
                 <p className="text-sm text-green-700">
-                  Admin registration now requires a valid invitation token from an existing administrator. 
-                  This ensures only authorized personnel can access the research dashboard.
+                  Admin registration requires a valid invitation token from an existing administrator. 
+                  Check your email for the invitation token and copy it exactly as shown.
                 </p>
               </div>
             </div>

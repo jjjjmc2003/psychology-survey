@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { UserPlus, Copy, Trash2, Clock, CheckCircle } from 'lucide-react';
+import { UserPlus, Copy, Trash2, Eye } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createAdminInvitation, getAdminInvitations, revokeAdminInvitation, AdminInvitation } from '@/utils/adminInvitations';
 
@@ -55,18 +55,10 @@ const AdminInviteSection: React.FC = () => {
       if (result.success && result.invitation) {
         toast({
           title: "Invitation Sent",
-          description: `Admin invitation created for ${email}`,
+          description: `Admin invitation email sent to ${email}. They will receive a token to copy and paste during signup.`,
         });
         setEmail('');
         await loadInvitations(); // Refresh the list
-        
-        // Copy invitation token to clipboard
-        const inviteUrl = `${window.location.origin}/admin/auth?token=${result.invitation.invitation_token}&email=${encodeURIComponent(email)}`;
-        navigator.clipboard.writeText(inviteUrl);
-        toast({
-          title: "Invite URL Copied",
-          description: "The invitation URL has been copied to your clipboard.",
-        });
       } else {
         toast({
           title: "Invitation Failed",
@@ -86,12 +78,11 @@ const AdminInviteSection: React.FC = () => {
     }
   };
 
-  const handleCopyInviteUrl = (invitation: AdminInvitation) => {
-    const inviteUrl = `${window.location.origin}/admin/auth?token=${invitation.invitation_token}&email=${encodeURIComponent(invitation.email)}`;
-    navigator.clipboard.writeText(inviteUrl);
+  const handleCopyToken = (invitation: AdminInvitation) => {
+    navigator.clipboard.writeText(invitation.invitation_token);
     toast({
-      title: "Invite URL Copied",
-      description: "The invitation URL has been copied to your clipboard.",
+      title: "Token Copied",
+      description: "The invitation token has been copied to your clipboard.",
     });
   };
 
@@ -160,11 +151,11 @@ const AdminInviteSection: React.FC = () => {
               onClick={handleInviteAdmin} 
               disabled={isLoading || !email.trim()}
             >
-              {isLoading ? 'Creating...' : 'Create Invitation'}
+              {isLoading ? 'Sending...' : 'Send Invitation'}
             </Button>
           </div>
           <p className="text-sm text-gray-600 mt-2">
-            Invitations expire after 7 days and can only be used once.
+            The user will receive an email with a token to copy and paste during signup.
           </p>
         </CardContent>
       </Card>
@@ -203,10 +194,10 @@ const AdminInviteSection: React.FC = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleCopyInviteUrl(invitation)}
+                            onClick={() => handleCopyToken(invitation)}
                           >
                             <Copy className="w-4 h-4 mr-1" />
-                            Copy URL
+                            Copy Token
                           </Button>
                         )}
                         {!invitation.is_used && (
