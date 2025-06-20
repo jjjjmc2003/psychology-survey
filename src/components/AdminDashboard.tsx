@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, Download, Shield, BarChart3, PieChart, TrendingUp, LogOut, AlertTriangle, Trash2 } from 'lucide-react';
+import { Eye, Download, Shield, BarChart3, PieChart, TrendingUp, LogOut, AlertTriangle, Trash2, Users } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import DataVisualizations from './DataVisualizations';
+import AdminInviteSection from './AdminInviteSection';
 import { getStoredResponses, exportSecureCSV } from '@/utils/supabaseStorage';
 import { useAuth } from './AuthWrapper';
 import { supabase } from '@/integrations/supabase/client';
@@ -203,7 +204,7 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Overview
@@ -215,6 +216,10 @@ const AdminDashboard: React.FC = () => {
             <TabsTrigger value="responses" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
               Raw Data
+            </TabsTrigger>
+            <TabsTrigger value="admin-management" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Admin Management
             </TabsTrigger>
           </TabsList>
 
@@ -367,6 +372,10 @@ const AdminDashboard: React.FC = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="admin-management">
+            <AdminInviteSection />
           </TabsContent>
         </Tabs>
 
