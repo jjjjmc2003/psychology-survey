@@ -25,8 +25,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Sending admin invitation email to:', email);
 
-    // Get the site URL from environment, fallback to the request origin
-    const siteUrl = Deno.env.get('SITE_URL') || new URL(req.url).origin;
+    // Use the app URL instead of Supabase URL
+    const siteUrl = "https://survey-switcheroo-magic.lovable.app";
     const inviteUrl = `${siteUrl}/admin/auth?token=${invitationToken}&email=${encodeURIComponent(email)}`;
 
     const emailResponse = await resend.emails.send({
