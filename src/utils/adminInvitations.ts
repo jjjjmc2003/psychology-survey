@@ -52,6 +52,26 @@ export const createAdminInvitation = async (email: string): Promise<{ success: b
       throw error;
     }
 
+    // Send invitation email automatically
+    try {
+      const { error: emailError } = await supabase.functions.invoke('send-admin-invitation', {
+        body: {
+          email,
+          invitationToken: data.invitation_token
+        }
+      });
+
+      if (emailError) {
+        console.error('Failed to send invitation email:', emailError);
+        // Don't fail the invitation creation if email fails, just log it
+      } else {
+        console.log('Invitation email sent successfully to:', email);
+      }
+    } catch (emailError) {
+      console.error('Error sending invitation email:', emailError);
+      // Don't fail the invitation creation if email fails
+    }
+
     // Log the admin action
     await supabase.rpc('log_admin_action', {
       p_action: 'admin_invitation_created',
