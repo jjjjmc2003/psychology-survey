@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import { validateSurveyResponse } from './validation';
+import { validateSurveyResponse, validateSurveyId, checkServerRateLimit } from './validation';
 
 // Define the interface that matches our Supabase table structure
 interface SupabaseSurveyResponse {
@@ -15,36 +15,61 @@ interface SupabaseSurveyResponse {
   updated_at: string;
 }
 
-// Generate a simple hash for IP addresses (for rate limiting)
+// Generate a more secure hash for IP addresses
 const hashIP = async (ip: string): Promise<string> => {
   const encoder = new TextEncoder();
-  const data = encoder.encode(ip + 'survey-salt-key');
+  const salt = 'secure-survey-salt-' + new Date().toISOString().split('T')[0];
+  const data = encoder.encode(ip + salt);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
 };
 
-// Save anonymous survey response to Supabase
+// Enhanced anonymous response saving with security checks
 export const saveAnonymousResponse = async (responseData: {
   surveyId: string;
   responses: Record<string, string>;
   sessionId: string;
 }) => {
   try {
-    console.log('Attempting to save anonymous response:', {
-      surveyId: responseData.surveyId,
-      responseCount: Object.keys(responseData.responses).length,
-      sessionId: responseData.sessionId
-    });
+    console.log('Attempting to save anonymous response with security validation');
 
-    // Validate and sanitize responses
-    const validation = validateSurveyResponse(responseData.responses);
+    // Validate survey ID
+    if (!validateSurveyId(responseData.surveyId)) {
+      return { 
+        success: false, 
+        error: 'Invalid survey identifier' 
+      };
+    }
+
+    // Check server-side rate limiting
+    const sessionIdentifier = 'session-' + responseData.sessionId;
+    const canSubmit = await checkServerRateLimit(sessionIdentifier, 'survey_submit', 3, 60);
+    
+    if (!canSubmit) {
+      return { 
+        success: false, 
+        error: 'Rate limit exceeded. Please wait before submitting again.' 
+      };
+    }
+
+    // Enhanced validation and sanitization
+    const validation = validateSurveyResponse(responseData.responses, responseData.surveyId);
     
     if (!validation.isValid) {
       console.warn('Validation errors:', validation.errors);
+      return { 
+        success: false, 
+        error: 'Invalid survey data provided' 
+      };
     }
 
-    // Get client IP hash for rate limiting (in production, this would be server-side)
+    // Log security warnings if any
+    if (validation.securityWarnings && validation.securityWarnings.length > 0) {
+      console.warn('Security warnings during validation:', validation.securityWarnings);
+    }
+
+    // Generate secure IP hash
     let ipHash = '';
     try {
       ipHash = await hashIP('anonymous-session-' + responseData.sessionId + '-' + Date.now());
@@ -52,21 +77,22 @@ export const saveAnonymousResponse = async (responseData: {
       console.warn('Could not generate IP hash:', error);
     }
 
-    // Insert directly into survey_responses table for anonymous users
-    // Make sure participant_id is explicitly null for anonymous submissions
+    // Insert with enhanced security metadata
     const { data, error } = await supabase
       .from('survey_responses')
       .insert({
         survey_id: responseData.surveyId,
-        participant_id: null, // Explicitly set to null for anonymous users
+        participant_id: null,
         responses: validation.data,
         completion_time: null,
         ip_hash: ipHash,
-        user_agent: navigator.userAgent,
+        user_agent: navigator.userAgent.slice(0, 500), // Limit user agent length
         metadata: {
           session_id: responseData.sessionId,
           anonymous: true,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          validation_warnings: validation.securityWarnings || [],
+          security_version: '2.0'
         }
       })
       .select('id')
@@ -82,7 +108,7 @@ export const saveAnonymousResponse = async (responseData: {
       throw error;
     }
 
-    console.log('Anonymous survey response saved successfully to Supabase:', data?.id);
+    console.log('Anonymous survey response saved successfully with security validation:', data?.id);
     return { success: true, id: data?.id };
   } catch (error: any) {
     console.error('Error saving anonymous response:', {
@@ -97,28 +123,45 @@ export const saveAnonymousResponse = async (responseData: {
   }
 };
 
-// Save survey response to Supabase
+// Enhanced secure response saving
 export const saveSecureResponse = async (responseData: {
   surveyId: string;
   responses: Record<string, string>;
 }) => {
   try {
-    // Validate and sanitize responses
-    const validation = validateSurveyResponse(responseData.responses);
+    // Validate survey ID
+    if (!validateSurveyId(responseData.surveyId)) {
+      return { 
+        success: false, 
+        error: 'Invalid survey identifier' 
+      };
+    }
+
+    // Enhanced validation and sanitization
+    const validation = validateSurveyResponse(responseData.responses, responseData.surveyId);
     
     if (!validation.isValid) {
       console.warn('Validation errors:', validation.errors);
+      return { 
+        success: false, 
+        error: 'Invalid survey data provided' 
+      };
     }
 
-    // Get client IP hash for rate limiting (in production, this would be server-side)
+    // Log security warnings
+    if (validation.securityWarnings && validation.securityWarnings.length > 0) {
+      console.warn('Security warnings during validation:', validation.securityWarnings);
+    }
+
+    // Generate secure IP hash
     let ipHash = '';
     try {
-      ipHash = await hashIP('client-session-' + Date.now());
+      ipHash = await hashIP('authenticated-session-' + Date.now());
     } catch (error) {
       console.warn('Could not generate IP hash:', error);
     }
 
-    // Use the Supabase function for secure insertion
+    // Use the enhanced Supabase function for secure insertion
     const { data, error } = await supabase.rpc('submit_survey_response', {
       p_survey_id: responseData.surveyId,
       p_responses: validation.data,
@@ -131,7 +174,7 @@ export const saveSecureResponse = async (responseData: {
       throw error;
     }
 
-    console.log('Survey response saved securely to Supabase:', data);
+    console.log('Survey response saved securely with validation:', data);
     return { success: true, id: data };
   } catch (error) {
     console.error('Error saving secure response:', error);

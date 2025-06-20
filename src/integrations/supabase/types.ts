@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_invitations: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          email: string
+          expires_at: string
+          id: string
+          invitation_token: string
+          is_used: boolean
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          invitation_token?: string
+          is_used?: boolean
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invitation_token?: string
+          is_used?: boolean
+          used_at?: string | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -51,6 +84,7 @@ export type Database = {
           email: string
           first_name: string | null
           id: string
+          is_verified_admin: boolean
           last_name: string | null
           role: Database["public"]["Enums"]["app_role"]
           updated_at: string
@@ -60,6 +94,7 @@ export type Database = {
           email: string
           first_name?: string | null
           id: string
+          is_verified_admin?: boolean
           last_name?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
@@ -69,9 +104,40 @@ export type Database = {
           email?: string
           first_name?: string | null
           id?: string
+          is_verified_admin?: boolean
           last_name?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      rate_limits: {
+        Row: {
+          action_type: string
+          attempt_count: number
+          blocked_until: string | null
+          first_attempt_at: string
+          id: string
+          identifier: string
+          last_attempt_at: string
+        }
+        Insert: {
+          action_type: string
+          attempt_count?: number
+          blocked_until?: string | null
+          first_attempt_at?: string
+          id?: string
+          identifier: string
+          last_attempt_at?: string
+        }
+        Update: {
+          action_type?: string
+          attempt_count?: number
+          blocked_until?: string | null
+          first_attempt_at?: string
+          id?: string
+          identifier?: string
+          last_attempt_at?: string
         }
         Relationships: []
       }
@@ -155,6 +221,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_rate_limit: {
+        Args: {
+          p_identifier: string
+          p_action_type: string
+          p_max_attempts?: number
+          p_window_minutes?: number
+        }
+        Returns: boolean
+      }
       cleanup_expired_sessions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -167,6 +242,19 @@ export type Database = {
         Args: { user_id: string }
         Returns: boolean
       }
+      is_admin_email: {
+        Args: { email_address: string }
+        Returns: boolean
+      }
+      log_admin_action: {
+        Args: {
+          p_action: string
+          p_resource_type: string
+          p_resource_id?: string
+          p_details?: Json
+        }
+        Returns: undefined
+      }
       submit_survey_response: {
         Args: {
           p_survey_id: string
@@ -175,6 +263,10 @@ export type Database = {
           p_ip_hash?: string
         }
         Returns: string
+      }
+      validate_admin_signup: {
+        Args: { p_email: string; p_invitation_token: string }
+        Returns: boolean
       }
     }
     Enums: {

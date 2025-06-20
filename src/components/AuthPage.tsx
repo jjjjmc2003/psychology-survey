@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,18 +9,26 @@ import { UserPlus, LogIn, Mail, Lock, User, AlertCircle, Shield, Key } from 'luc
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+const AUTH_CONFIG = {
+  ADMIN_EMAIL_DOMAINS: ['@psychology.research', '@admin.research'],
+  ADMIN_EMAILS: ['admin@lovable.dev', 'research@admin.com'],
+};
+
 const AuthPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [adminPassword, setAdminPassword] = useState('');
+  const [invitationToken, setInvitationToken] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
   const { toast } = useToast();
 
-  // Admin password - in production, this should be in environment variables
-  const ADMIN_SIGNUP_PASSWORD = 'Buttercup10!';
+  const isAdminEmail = (email: string): boolean => {
+    const lowerEmail = email.toLowerCase();
+    return AUTH_CONFIG.ADMIN_EMAIL_DOMAINS.some(domain => lowerEmail.includes(domain)) ||
+           AUTH_CONFIG.ADMIN_EMAILS.some(adminEmail => lowerEmail === adminEmail.toLowerCase());
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +42,19 @@ const AuthPage: React.FC = () => {
       return;
     }
 
-    if (adminPassword !== ADMIN_SIGNUP_PASSWORD) {
+    if (!isAdminEmail(email)) {
       toast({
-        title: "Invalid admin password",
-        description: "The admin password is incorrect. Only authorized personnel can create admin accounts.",
+        title: "Invalid email domain",
+        description: "Admin registration is restricted to authorized email domains.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!invitationToken.trim()) {
+      toast({
+        title: "Invitation token required",
+        description: "Please enter your invitation token to register as an admin.",
         variant: "destructive",
       });
       return;
@@ -45,6 +63,26 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Validate invitation token before creating account
+      const { data: isValid, error: validationError } = await supabase
+        .rpc('validate_admin_signup', {
+          p_email: email,
+          p_invitation_token: invitationToken
+        });
+
+      if (validationError) {
+        throw new Error('Failed to validate invitation token');
+      }
+
+      if (!isValid) {
+        toast({
+          title: "Invalid invitation",
+          description: "The invitation token is invalid, expired, or already used.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const redirectUrl = `${window.location.origin}/admin`;
       
       const { error } = await supabase.auth.signUp({
@@ -72,21 +110,22 @@ const AuthPage: React.FC = () => {
         }
       } else {
         toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link to complete your registration.",
+          title: "Registration successful",
+          description: "Your admin account has been created. You can now sign in.",
         });
-        // Clear form
+        // Clear form and switch to sign in
         setFirstName('');
         setLastName('');
         setEmail('');
         setPassword('');
-        setAdminPassword('');
+        setInvitationToken('');
+        setActiveTab('signin');
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
       toast({
-        title: "Sign up failed",
-        description: error.message || "An error occurred during sign up",
+        title: "Registration failed",
+        description: error.message || "An error occurred during registration",
         variant: "destructive",
       });
     } finally {
@@ -99,6 +138,28 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Check rate limiting before attempting login
+      const { data: canAttempt, error: rateLimitError } = await supabase
+        .rpc('check_rate_limit', {
+          p_identifier: email,
+          p_action_type: 'login_attempt',
+          p_max_attempts: 5,
+          p_window_minutes: 15
+        });
+
+      if (rateLimitError) {
+        console.warn('Rate limit check failed:', rateLimitError);
+      }
+
+      if (canAttempt === false) {
+        toast({
+          title: "Too many attempts",
+          description: "Please wait before trying to sign in again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -145,7 +206,7 @@ const AuthPage: React.FC = () => {
             Admin Dashboard Access
           </CardTitle>
           <p className="text-gray-600 text-sm">
-            Restricted access for research administrators
+            Secure access for research administrators
           </p>
         </CardHeader>
         <CardContent>
@@ -246,6 +307,9 @@ const AuthPage: React.FC = () => {
                     placeholder="Enter your admin email"
                     required
                   />
+                  <p className="text-xs text-gray-500">
+                    Must be from an authorized domain
+                  </p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="signup-password" className="flex items-center gap-2">
@@ -263,20 +327,20 @@ const AuthPage: React.FC = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="admin-password" className="flex items-center gap-2">
+                  <Label htmlFor="invitation-token" className="flex items-center gap-2">
                     <Key className="w-4 h-4" />
-                    Admin Password
+                    Invitation Token
                   </Label>
                   <Input
-                    id="admin-password"
-                    type="password"
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="Enter admin signup password"
+                    id="invitation-token"
+                    type="text"
+                    value={invitationToken}
+                    onChange={(e) => setInvitationToken(e.target.value)}
+                    placeholder="Enter your invitation token"
                     required
                   />
                   <p className="text-xs text-gray-500">
-                    Contact your research administrator for the admin password
+                    Contact your research administrator for an invitation token
                   </p>
                 </div>
                 <Button 
@@ -290,15 +354,14 @@ const AuthPage: React.FC = () => {
             </TabsContent>
           </Tabs>
 
-          <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
+          <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
             <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5 mr-3 flex-shrink-0" />
+              <Shield className="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-orange-800 mb-1">Administrator Access</h3>
-                <p className="text-sm text-orange-700">
-                  This area is restricted to research administrators and staff. 
-                  Regular survey participants do not need accounts - the survey is anonymous.
-                  An admin password is required for new registrations.
+                <h3 className="font-semibold text-green-800 mb-1">Secure Access</h3>
+                <p className="text-sm text-green-700">
+                  Admin registration now requires a valid invitation token from an existing administrator. 
+                  This ensures only authorized personnel can access the research dashboard.
                 </p>
               </div>
             </div>
