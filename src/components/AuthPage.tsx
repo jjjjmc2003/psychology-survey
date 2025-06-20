@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, LogIn, Mail, Lock, User, AlertCircle, Shield, Key } from 'lucide-react';
+import { UserPlus, LogIn, Mail, Lock, User, Shield, Key } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -25,7 +25,6 @@ const AuthPage: React.FC = () => {
   const [hasInvitation, setHasInvitation] = useState(false);
   const { toast } = useToast();
 
-  // Check for invitation token and email in URL parameters
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const tokenFromUrl = urlParams.get('token');
@@ -36,12 +35,12 @@ const AuthPage: React.FC = () => {
       setEmail(decodeURIComponent(emailFromUrl));
       setActiveTab('signup');
       setHasInvitation(true);
+      
       toast({
         title: "Invitation found",
         description: "Please complete your registration using the invitation details.",
       });
       
-      // Clear URL parameters to clean up the address bar
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
     }
@@ -86,7 +85,6 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // Validate invitation token before creating account
       const { data: isValid, error: validationError } = await supabase
         .rpc('validate_admin_signup', {
           p_email: email,
@@ -133,10 +131,9 @@ const AuthPage: React.FC = () => {
           title: "Registration successful",
           description: "Your admin account has been created. You can now sign in.",
         });
-        // Clear form and switch to sign in
+        
         setFirstName('');
         setLastName('');
-        setEmail('');
         setPassword('');
         setInvitationToken('');
         setHasInvitation(false);
@@ -159,18 +156,13 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // Check rate limiting before attempting login
-      const { data: canAttempt, error: rateLimitError } = await supabase
+      const { data: canAttempt } = await supabase
         .rpc('check_rate_limit', {
           p_identifier: email,
           p_action_type: 'login_attempt',
           p_max_attempts: 5,
           p_window_minutes: 15
         });
-
-      if (rateLimitError) {
-        console.warn('Rate limit check failed:', rateLimitError);
-      }
 
       if (canAttempt === false) {
         toast({
