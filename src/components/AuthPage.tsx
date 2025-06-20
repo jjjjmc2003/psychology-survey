@@ -41,6 +41,7 @@ const AuthPage: React.FC = () => {
         description: "Please complete your registration using the invitation details.",
       });
       
+      // Clean up URL
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
     }
@@ -132,6 +133,7 @@ const AuthPage: React.FC = () => {
           description: "Your admin account has been created. You can now sign in.",
         });
         
+        // Reset form
         setFirstName('');
         setLastName('');
         setPassword('');
@@ -156,38 +158,17 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const { data: canAttempt } = await supabase
-        .rpc('check_rate_limit', {
-          p_identifier: email,
-          p_action_type: 'login_attempt',
-          p_max_attempts: 5,
-          p_window_minutes: 15
-        });
-
-      if (canAttempt === false) {
-        toast({
-          title: "Too many attempts",
-          description: "Please wait before trying to sign in again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast({
-            title: "Sign in failed",
-            description: "Invalid email or password. Please check your credentials.",
-            variant: "destructive",
-          });
-        } else {
-          throw error;
-        }
+        toast({
+          title: "Sign in failed",
+          description: "Invalid email or password. Please check your credentials.",
+          variant: "destructive",
+        });
       } else {
         toast({
           title: "Welcome back!",

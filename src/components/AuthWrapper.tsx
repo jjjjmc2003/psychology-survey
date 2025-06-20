@@ -35,49 +35,44 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
+    let isMounted = true;
 
-    const initializeAuth = async () => {
-      try {
-        const { data: { session: initialSession } } = await supabase.auth.getSession();
-        
-        if (mounted) {
-          setSession(initialSession);
-          setUser(initialSession?.user ?? null);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    initializeAuth();
-
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (mounted) {
+        if (isMounted) {
           console.log('Auth state changed:', event);
           setSession(session);
           setUser(session?.user ?? null);
-          setLoading(false);
+          if (loading) {
+            setLoading(false);
+          }
         }
       }
     );
 
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (isMounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
+    }).catch(error => {
+      console.error('Error getting session:', error);
+      if (isMounted) {
+        setLoading(false);
+      }
+    });
+
     return () => {
-      mounted = false;
+      isMounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, []); // Empty dependency array
 
   const signOut = async () => {
     try {
-      setSession(null);
-      setUser(null);
-      
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Error signing out:', error);
