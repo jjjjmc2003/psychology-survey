@@ -1,155 +1,18 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, LogIn, Mail, Lock, User, Shield, Key } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { UserPlus, LogIn, Shield } from 'lucide-react';
+import { SignInForm } from './auth/SignInForm';
+import { SignUpForm } from './auth/SignUpForm';
 
 const AuthPage: React.FC = () => {
-  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [invitationToken, setInvitationToken] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
-  const { toast } = useToast();
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!firstName.trim() || !lastName.trim()) {
-      toast({
-        title: "Missing information",
-        description: "Please enter both first and last name.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!invitationToken.trim()) {
-      toast({
-        title: "Invitation token required",
-        description: "Please enter your invitation token to register as an admin.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // First validate the invitation token
-      const { data: isValid, error: validationError } = await supabase
-        .rpc('validate_admin_signup', {
-          p_email: email,
-          p_invitation_token: invitationToken
-        });
-
-      if (validationError) {
-        console.error('Validation error:', validationError);
-        toast({
-          title: "Validation failed",
-          description: "Failed to validate invitation token. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!isValid) {
-        toast({
-          title: "Invalid invitation",
-          description: "The invitation token is invalid, expired, or already used.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // If validation passes, create the user account
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName.trim(),
-            last_name: lastName.trim()
-          }
-        }
-      });
-
-      if (error) {
-        if (error.message.includes('already registered')) {
-          toast({
-            title: "Account exists",
-            description: "This email is already registered. Please sign in instead.",
-            variant: "destructive",
-          });
-          setActiveTab('signin');
-        } else {
-          throw error;
-        }
-      } else {
-        toast({
-          title: "Registration successful",
-          description: "Your admin account has been created. You can now sign in.",
-        });
-        
-        // Reset form
-        setFirstName('');
-        setLastName('');
-        setPassword('');
-        setInvitationToken('');
-        setActiveTab('signin');
-      }
-    } catch (error: any) {
-      console.error('Sign up error:', error);
-      toast({
-        title: "Registration failed",
-        description: error.message || "An error occurred during registration",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        toast({
-          title: "Sign in failed",
-          description: "Invalid email or password. Please check your credentials.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Welcome back!",
-          description: "You have been signed in successfully.",
-        });
-      }
-    } catch (error: any) {
-      console.error('Sign in error:', error);
-      toast({
-        title: "Sign in failed",
-        description: error.message || "An error occurred during sign in",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center p-6">
@@ -181,134 +44,28 @@ const AuthPage: React.FC = () => {
             </TabsList>
 
             <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email" className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    Email
-                  </Label>
-                  <Input
-                    id="signin-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your admin email"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password" className="flex items-center gap-2">
-                    <Lock className="w-4 h-4" />
-                    Password
-                  </Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    required
-                  />
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-slate-600 hover:bg-slate-700"
-                  disabled={loading}
-                >
-                  {loading ? 'Signing in...' : 'Sign In to Dashboard'}
-                </Button>
-              </form>
+              <SignInForm
+                email={email}
+                password={password}
+                onEmailChange={setEmail}
+                onPasswordChange={setPassword}
+              />
             </TabsContent>
 
             <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="first-name" className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      First Name
-                    </Label>
-                    <Input
-                      id="first-name"
-                      type="text"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      placeholder="First name"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="last-name" className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      Last Name
-                    </Label>
-                    <Input
-                      id="last-name"
-                      type="text"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      placeholder="Last name"
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    Admin Email
-                  </Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your admin email"
-                    required
-                  />
-                  <p className="text-xs text-gray-500">
-                    Must have a valid invitation token
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="flex items-center gap-2">
-                    <Lock className="w-4 h-4" />
-                    Password
-                  </Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Create a password (min 6 characters)"
-                    minLength={6}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="invitation-token" className="flex items-center gap-2">
-                    <Key className="w-4 h-4" />
-                    Invitation Token
-                  </Label>
-                  <Input
-                    id="invitation-token"
-                    type="text"
-                    value={invitationToken}
-                    onChange={(e) => setInvitationToken(e.target.value)}
-                    placeholder="Paste your invitation token here"
-                    required
-                  />
-                  <p className="text-xs text-gray-500">
-                    Copy and paste the token from your invitation email
-                  </p>
-                </div>
-                <Button 
-                  type="submit" 
-                  className="w-full bg-slate-600 hover:bg-slate-700"
-                  disabled={loading}
-                >
-                  {loading ? 'Creating account...' : 'Register Admin Account'}
-                </Button>
-              </form>
+              <SignUpForm
+                email={email}
+                password={password}
+                firstName={firstName}
+                lastName={lastName}
+                invitationToken={invitationToken}
+                onEmailChange={setEmail}
+                onPasswordChange={setPassword}
+                onFirstNameChange={setFirstName}
+                onLastNameChange={setLastName}
+                onInvitationTokenChange={setInvitationToken}
+                onSwitchToSignIn={() => setActiveTab('signin')}
+              />
             </TabsContent>
           </Tabs>
 
