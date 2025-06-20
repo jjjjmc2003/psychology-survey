@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Eye, Download, Lock } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Eye, Download, Lock, BarChart3, PieChart, TrendingUp } from 'lucide-react';
+import DataVisualizations from './DataVisualizations';
 
 interface SurveyResponse {
   id: string;
@@ -106,103 +108,139 @@ const AdminDashboard: React.FC = () => {
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Survey Response Dashboard</h1>
-          <p className="text-gray-600">Psychology Research: Mental Health & Cosmetic Surgery</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Psychology Research Dashboard</h1>
+          <p className="text-gray-600">Mental Health & Cosmetic Surgery Analysis</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Total Responses</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-600">{surveyResponses.length}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Female Participants</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-pink-600">
-                {surveyResponses.filter(r => r.responses.sex === 'Female').length}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg">Latest Response</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-gray-600">
-                {surveyResponses.length > 0 
-                  ? new Date(surveyResponses[surveyResponses.length - 1].timestamp).toLocaleString()
-                  : 'No responses yet'
-                }
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="flex items-center gap-2">
+              <PieChart className="w-4 h-4" />
+              Analytics
+            </TabsTrigger>
+            <TabsTrigger value="responses" className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4" />
+              Raw Data
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Survey Responses</h2>
-          <div className="space-x-4">
-            <Button onClick={exportToCSV} disabled={surveyResponses.length === 0}>
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
-            </Button>
-            <Button variant="outline" onClick={() => setIsAuthenticated(false)}>
-              Logout
-            </Button>
-          </div>
-        </div>
+          <TabsContent value="overview">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Total Responses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-blue-600">{surveyResponses.length}</div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Female Participants</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-pink-600">
+                    {surveyResponses.filter(r => r.responses.sex === 'Female').length}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Completion Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-green-600">
+                    {surveyResponses.length > 0 ? '100%' : '0%'}
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-lg">Latest Response</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-sm text-gray-600">
+                    {surveyResponses.length > 0 
+                      ? new Date(surveyResponses[surveyResponses.length - 1].timestamp).toLocaleString()
+                      : 'No responses yet'
+                    }
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Response ID</TableHead>
-                  <TableHead>Survey Variation</TableHead>
-                  <TableHead>Sex</TableHead>
-                  <TableHead>Age</TableHead>
-                  <TableHead>Timestamp</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {surveyResponses.map((response) => (
-                  <TableRow key={response.id}>
-                    <TableCell className="font-mono text-sm">
-                      {response.id.slice(-8)}
-                    </TableCell>
-                    <TableCell>{response.surveyId}</TableCell>
-                    <TableCell>{response.responses.sex || 'N/A'}</TableCell>
-                    <TableCell>{response.responses.age || 'N/A'}</TableCell>
-                    <TableCell>{new Date(response.timestamp).toLocaleString()}</TableCell>
-                    <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSelectedResponse(response)}
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        View
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {surveyResponses.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
-                No survey responses yet
+          <TabsContent value="analytics">
+            <DataVisualizations responses={surveyResponses} />
+          </TabsContent>
+
+          <TabsContent value="responses">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold">Survey Response Details</h2>
+              <div className="space-x-4">
+                <Button onClick={exportToCSV} disabled={surveyResponses.length === 0}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button variant="outline" onClick={() => setIsAuthenticated(false)}>
+                  Logout
+                </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
+
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Response ID</TableHead>
+                      <TableHead>Survey Variation</TableHead>
+                      <TableHead>Sex</TableHead>
+                      <TableHead>Age</TableHead>
+                      <TableHead>Timestamp</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {surveyResponses.map((response) => (
+                      <TableRow key={response.id}>
+                        <TableCell className="font-mono text-sm">
+                          {response.id.slice(-8)}
+                        </TableCell>
+                        <TableCell>{response.surveyId}</TableCell>
+                        <TableCell>{response.responses.sex || 'N/A'}</TableCell>
+                        <TableCell>{response.responses.age || 'N/A'}</TableCell>
+                        <TableCell>{new Date(response.timestamp).toLocaleString()}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedResponse(response)}
+                          >
+                            <Eye className="w-4 h-4 mr-1" />
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+                {surveyResponses.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No survey responses yet
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {selectedResponse && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
