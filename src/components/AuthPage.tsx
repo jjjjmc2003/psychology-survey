@@ -132,6 +132,9 @@ const AuthPage: React.FC = () => {
           throw error;
         }
       } else {
+        // Sign out immediately after signup to prevent auto-login for invitations
+        await supabase.auth.signOut();
+        
         toast({
           title: "Registration successful",
           description: "Your admin account has been created. You can now sign in.",

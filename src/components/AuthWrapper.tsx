@@ -56,9 +56,23 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
   }, []);
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error signing out:', error);
+    try {
+      // Clear local state first
+      setSession(null);
+      setUser(null);
+      
+      // Then sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+        // Even if there's an error, we've cleared the local state
+        // so the user will be logged out from the UI perspective
+      }
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      // Clear local state even if there's an error
+      setSession(null);
+      setUser(null);
     }
   };
 
