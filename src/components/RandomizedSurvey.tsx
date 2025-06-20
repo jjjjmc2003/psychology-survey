@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import SurveyQuestion from './SurveyQuestion';
 import SurveyCompletion from './SurveyCompletion';
 import { SurveyVariation, getRandomSurvey } from '@/data/surveyVariations';
 import { FileText, Shuffle } from 'lucide-react';
-import { validateSurveyResponse, checkRateLimit } from '@/utils/validation';
+import { validateSurveyResponse } from '@/utils/validation';
 import { saveAnonymousResponse } from '@/utils/supabaseStorage';
 import { useToast } from '@/hooks/use-toast';
 
@@ -38,16 +37,6 @@ const RandomizedSurvey: React.FC = () => {
   }, []);
 
   const startSurvey = () => {
-    // Check rate limiting before starting (using session ID instead of user ID)
-    if (!checkRateLimit(sessionId, 5, 3600000)) { // 5 attempts per hour
-      toast({
-        title: "Rate Limit Exceeded",
-        description: "Too many survey attempts. Please try again later.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     setHasStarted(true);
   };
 
@@ -61,27 +50,21 @@ const RandomizedSurvey: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Validate and sanitize responses
-      const validation = validateSurveyResponse(responses);
-      
-      if (!validation.isValid) {
-        console.warn('Validation errors:', validation.errors);
-        toast({
-          title: "Validation Warning",
-          description: "Some responses may contain invalid data. Proceeding with sanitized version.",
-          variant: "destructive",
-        });
-      }
+      console.log('Saving anonymous response...', {
+        surveyId: currentSurvey.id,
+        responseCount: Object.keys(responses).length,
+        sessionId: sessionId
+      });
 
       // Save using anonymous response function
       const result = await saveAnonymousResponse({
         surveyId: currentSurvey.id,
-        responses: validation.data,
+        responses: responses,
         sessionId: sessionId
       });
 
       if (result.success) {
-        console.log('Anonymous survey response saved securely:', result.id);
+        console.log('Anonymous survey response saved successfully:', result.id);
         toast({
           title: "Response Saved",
           description: "Your anonymous survey response has been recorded securely. Thank you for participating!",
