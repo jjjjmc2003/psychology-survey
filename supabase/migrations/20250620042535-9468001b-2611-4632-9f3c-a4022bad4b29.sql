@@ -65,14 +65,15 @@ CREATE TABLE public.audit_logs (
 -- Enable RLS on audit_logs
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Create security definer functions to avoid RLS recursion
+-- Create security definer functions with proper search_path
 CREATE OR REPLACE FUNCTION public.get_user_role(user_id UUID)
 RETURNS app_role
 LANGUAGE SQL
 SECURITY DEFINER
 STABLE
+SET search_path = public
 AS $$
-  SELECT role FROM public.profiles WHERE id = user_id;
+  SELECT role FROM profiles WHERE id = user_id;
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_admin(user_id UUID)
@@ -80,8 +81,9 @@ RETURNS BOOLEAN
 LANGUAGE SQL
 SECURITY DEFINER
 STABLE
+SET search_path = public
 AS $$
-  SELECT EXISTS(SELECT 1 FROM public.profiles WHERE id = user_id AND role IN ('admin', 'researcher'));
+  SELECT EXISTS(SELECT 1 FROM profiles WHERE id = user_id AND role IN ('admin', 'researcher'));
 $$;
 
 -- RLS Policies for profiles
@@ -118,7 +120,7 @@ CREATE POLICY "Admins can view all sessions" ON public.survey_sessions
 CREATE POLICY "Admins can view audit logs" ON public.audit_logs
   FOR SELECT USING (public.is_admin(auth.uid()));
 
--- Create trigger function for automatic profile creation
+-- Create trigger function for automatic profile creation with proper search_path
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -126,7 +128,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, role, first_name, last_name)
+  INSERT INTO profiles (id, email, role, first_name, last_name)
   VALUES (
     new.id,
     new.email,
@@ -146,17 +148,18 @@ CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Create function to clean up expired sessions
+-- Create function to clean up expired sessions with proper search_path
 CREATE OR REPLACE FUNCTION public.cleanup_expired_sessions()
 RETURNS void
 LANGUAGE SQL
 SECURITY DEFINER
+SET search_path = public
 AS $$
-  DELETE FROM public.survey_sessions 
+  DELETE FROM survey_sessions 
   WHERE expires_at < NOW() AND is_completed = FALSE;
 $$;
 
--- Create function for secure survey response insertion
+-- Create function for secure survey response insertion with proper search_path
 CREATE OR REPLACE FUNCTION public.submit_survey_response(
   p_survey_id TEXT,
   p_responses JSONB,
@@ -166,12 +169,13 @@ CREATE OR REPLACE FUNCTION public.submit_survey_response(
 RETURNS UUID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
   response_id UUID;
 BEGIN
   -- Insert the survey response
-  INSERT INTO public.survey_responses (
+  INSERT INTO survey_responses (
     survey_id,
     participant_id,
     responses,
@@ -190,7 +194,7 @@ BEGIN
   RETURNING id INTO response_id;
 
   -- Log the submission
-  INSERT INTO public.audit_logs (
+  INSERT INTO audit_logs (
     user_id,
     action,
     resource_type,

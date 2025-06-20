@@ -15,10 +15,21 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [activeTab, setActiveTab] = useState('signin');
   const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!firstName.trim() || !lastName.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please enter both first and last name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -30,8 +41,8 @@ const AuthPage: React.FC = () => {
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            first_name: firstName,
-            last_name: lastName
+            first_name: firstName.trim(),
+            last_name: lastName.trim()
           }
         }
       });
@@ -43,6 +54,7 @@ const AuthPage: React.FC = () => {
             description: "This email is already registered. Please sign in instead.",
             variant: "destructive",
           });
+          setActiveTab('signin');
         } else {
           throw error;
         }
@@ -51,6 +63,11 @@ const AuthPage: React.FC = () => {
           title: "Check your email",
           description: "We've sent you a confirmation link to complete your registration.",
         });
+        // Clear form
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPassword('');
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -114,7 +131,7 @@ const AuthPage: React.FC = () => {
           </p>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="signin" className="space-y-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin" className="flex items-center gap-2">
                 <LogIn className="w-4 h-4" />
