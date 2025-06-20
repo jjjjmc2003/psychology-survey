@@ -22,6 +22,7 @@ const RandomizedSurvey: React.FC = () => {
     setIsCompleted(false);
     setHasStarted(false);
     console.log('Loaded survey variation:', survey.id, survey.title);
+    console.log('Random questions included:', survey.questions.slice(30).map(q => q.id));
   };
 
   useEffect(() => {
@@ -36,15 +37,32 @@ const RandomizedSurvey: React.FC = () => {
     setResponses(prev => ({ ...prev, [questionId]: value }));
   };
 
+  const saveResponse = () => {
+    if (!currentSurvey) return;
+
+    const responseData = {
+      id: `response-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      surveyId: currentSurvey.id,
+      timestamp: new Date().toISOString(),
+      responses: responses
+    };
+
+    // Save to localStorage
+    const existingResponses = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
+    existingResponses.push(responseData);
+    localStorage.setItem('surveyResponses', JSON.stringify(existingResponses));
+
+    console.log('Survey response saved:', responseData);
+  };
+
   const handleNext = () => {
     if (!currentSurvey) return;
 
     if (currentQuestionIndex < currentSurvey.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      // Survey completed
-      console.log('Survey completed! Responses:', responses);
-      console.log('Survey variation:', currentSurvey.id);
+      // Survey completed - save the response
+      saveResponse();
       setIsCompleted(true);
     }
   };
@@ -98,10 +116,10 @@ const RandomizedSurvey: React.FC = () => {
               <div className="bg-blue-50 p-4 rounded-lg">
                 <div className="flex items-center text-sm text-blue-700 mb-1">
                   <Shuffle className="w-4 h-4 mr-2" />
-                  Random Survey Version
+                  Randomized Survey
                 </div>
                 <p className="text-xs text-blue-600">
-                  You've been assigned: {currentSurvey.id}
+                  33 questions total (30 standard + 3 randomized)
                 </p>
               </div>
               
@@ -110,7 +128,13 @@ const RandomizedSurvey: React.FC = () => {
                   {currentSurvey.questions.length} questions
                 </p>
                 <p className="text-xs text-gray-500">
-                  Estimated time: {Math.ceil(currentSurvey.questions.length * 0.5)} minutes
+                  Estimated time: {Math.ceil(currentSurvey.questions.length * 0.75)} minutes
+                </p>
+              </div>
+              
+              <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
+                <p className="text-xs text-yellow-800">
+                  This research study examines mental health and body image. Your responses are anonymous and will be used for academic research purposes only.
                 </p>
               </div>
               
@@ -118,7 +142,7 @@ const RandomizedSurvey: React.FC = () => {
                 onClick={startSurvey}
                 className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium"
               >
-                Start Survey
+                Begin Survey
               </Button>
             </div>
           </CardContent>
