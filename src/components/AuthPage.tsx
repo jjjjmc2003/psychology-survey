@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, LogIn, Mail, Lock, User, AlertCircle, Shield } from 'lucide-react';
+import { UserPlus, LogIn, Mail, Lock, User, AlertCircle, Shield, Key } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -15,8 +15,12 @@ const AuthPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
   const { toast } = useToast();
+
+  // Admin password - in production, this should be in environment variables
+  const ADMIN_SIGNUP_PASSWORD = 'research-admin-2024';
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +29,15 @@ const AuthPage: React.FC = () => {
       toast({
         title: "Missing information",
         description: "Please enter both first and last name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (adminPassword !== ADMIN_SIGNUP_PASSWORD) {
+      toast({
+        title: "Invalid admin password",
+        description: "The admin password is incorrect. Only authorized personnel can create admin accounts.",
         variant: "destructive",
       });
       return;
@@ -68,6 +81,7 @@ const AuthPage: React.FC = () => {
         setLastName('');
         setEmail('');
         setPassword('');
+        setAdminPassword('');
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -249,6 +263,23 @@ const AuthPage: React.FC = () => {
                     required
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="admin-password" className="flex items-center gap-2">
+                    <Key className="w-4 h-4" />
+                    Admin Password
+                  </Label>
+                  <Input
+                    id="admin-password"
+                    type="password"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Enter admin signup password"
+                    required
+                  />
+                  <p className="text-xs text-gray-500">
+                    Contact your research administrator for the admin password
+                  </p>
+                </div>
                 <Button 
                   type="submit" 
                   className="w-full bg-slate-600 hover:bg-slate-700"
@@ -268,6 +299,7 @@ const AuthPage: React.FC = () => {
                 <p className="text-sm text-orange-700">
                   This area is restricted to research administrators and staff. 
                   Regular survey participants do not need accounts - the survey is anonymous.
+                  An admin password is required for new registrations.
                 </p>
               </div>
             </div>
