@@ -2,15 +2,16 @@
 import { supabase } from '@/integrations/supabase/client';
 import { validateSurveyResponse } from './validation';
 
-interface SurveyResponse {
+// Define the interface that matches our Supabase table structure
+interface SupabaseSurveyResponse {
   id: string;
   survey_id: string;
-  participant_id: string;
+  participant_id: string | null;
   responses: Record<string, string>;
-  metadata: Record<string, any>;
-  ip_hash?: string;
-  user_agent?: string;
-  completion_time?: string;
+  metadata?: Record<string, any>;
+  ip_hash?: string | null;
+  user_agent?: string | null;
+  completion_time?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -67,7 +68,7 @@ export const saveSecureResponse = async (responseData: {
 };
 
 // Get stored responses from Supabase (for admins)
-export const getStoredResponses = async (): Promise<SurveyResponse[]> => {
+export const getStoredResponses = async (): Promise<SupabaseSurveyResponse[]> => {
   try {
     const { data, error } = await supabase
       .from('survey_responses')
@@ -79,7 +80,21 @@ export const getStoredResponses = async (): Promise<SurveyResponse[]> => {
       return [];
     }
 
-    return data || [];
+    // Transform the Supabase data to match our interface
+    const transformedData: SupabaseSurveyResponse[] = (data || []).map(item => ({
+      id: item.id,
+      survey_id: item.survey_id,
+      participant_id: item.participant_id,
+      responses: item.responses as Record<string, string>,
+      metadata: item.metadata as Record<string, any> || {},
+      ip_hash: item.ip_hash,
+      user_agent: item.user_agent,
+      completion_time: item.completion_time,
+      created_at: item.created_at,
+      updated_at: item.updated_at
+    }));
+
+    return transformedData;
   } catch (error) {
     console.error('Error retrieving stored responses:', error);
     return [];
@@ -87,7 +102,7 @@ export const getStoredResponses = async (): Promise<SurveyResponse[]> => {
 };
 
 // Export CSV with data anonymization
-export const exportSecureCSV = (responses: SurveyResponse[], anonymize: boolean = true) => {
+export const exportSecureCSV = (responses: SupabaseSurveyResponse[], anonymize: boolean = true) => {
   if (responses.length === 0) return null;
   
   // Get all unique question IDs

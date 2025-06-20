@@ -10,23 +10,24 @@ import DataVisualizations from './DataVisualizations';
 import { getStoredResponses, exportSecureCSV } from '@/utils/supabaseStorage';
 import { useAuth } from './AuthWrapper';
 
-interface SurveyResponse {
+// Define the interface that matches our Supabase data structure
+interface AdminSurveyResponse {
   id: string;
   survey_id: string;
-  participant_id: string;
+  participant_id: string | null;
   responses: Record<string, string>;
   metadata?: Record<string, any>;
-  ip_hash?: string;
-  user_agent?: string;
-  completion_time?: string;
+  ip_hash?: string | null;
+  user_agent?: string | null;
+  completion_time?: string | null;
   created_at: string;
   updated_at: string;
 }
 
 const AdminDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [surveyResponses, setSurveyResponses] = useState<SurveyResponse[]>([]);
-  const [selectedResponse, setSelectedResponse] = useState<SurveyResponse | null>(null);
+  const [surveyResponses, setSurveyResponses] = useState<AdminSurveyResponse[]>([]);
+  const [selectedResponse, setSelectedResponse] = useState<AdminSurveyResponse | null>(null);
   const { toast } = useToast();
   const { user, signOut, loading } = useAuth();
 
@@ -90,6 +91,17 @@ const AdminDashboard: React.FC = () => {
         variant: "destructive",
       });
     }
+  };
+
+  // Transform data for DataVisualizations component
+  const transformDataForVisualization = (responses: AdminSurveyResponse[]) => {
+    return responses.map(response => ({
+      id: response.id,
+      surveyId: response.survey_id,
+      responses: response.responses,
+      timestamp: response.created_at,
+      metadata: response.metadata || {}
+    }));
   };
 
   if (loading) {
@@ -203,7 +215,7 @@ const AdminDashboard: React.FC = () => {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <DataVisualizations responses={surveyResponses} />
+            <DataVisualizations responses={transformDataForVisualization(surveyResponses)} />
           </TabsContent>
 
           <TabsContent value="responses">
