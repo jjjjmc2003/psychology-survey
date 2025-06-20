@@ -25,7 +25,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Sending admin invitation email to:', email);
 
-    const inviteUrl = `${Deno.env.get('SUPABASE_URL')?.replace('/rest/v1', '')}/admin/auth?token=${invitationToken}&email=${encodeURIComponent(email)}`;
+    // Get the site URL from environment, fallback to the request origin
+    const siteUrl = Deno.env.get('SITE_URL') || new URL(req.url).origin;
+    const inviteUrl = `${siteUrl}/admin/auth?token=${invitationToken}&email=${encodeURIComponent(email)}`;
 
     const emailResponse = await resend.emails.send({
       from: "Psychology Research <onboarding@resend.dev>",

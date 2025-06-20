@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,23 @@ const AuthPage: React.FC = () => {
   const [invitationToken, setInvitationToken] = useState('');
   const [activeTab, setActiveTab] = useState('signin');
   const { toast } = useToast();
+
+  // Check for invitation token and email in URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get('token');
+    const emailFromUrl = urlParams.get('email');
+    
+    if (tokenFromUrl && emailFromUrl) {
+      setInvitationToken(tokenFromUrl);
+      setEmail(decodeURIComponent(emailFromUrl));
+      setActiveTab('signup');
+      toast({
+        title: "Invitation found",
+        description: "Please complete your registration using the invitation details.",
+      });
+    }
+  }, [toast]);
 
   const isAdminEmail = (email: string): boolean => {
     const lowerEmail = email.toLowerCase();
