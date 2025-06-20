@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Mail, Lock, Key } from 'lucide-react';
+import { User, Mail, Lock, Key, CheckCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,6 +36,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
   onSwitchToSignIn
 }) => {
   const [loading, setLoading] = useState(false);
+  const [showEmailVerification, setShowEmailVerification] = useState(false);
   const { toast } = useToast();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -90,6 +92,7 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/admin`,
           data: {
             first_name: firstName.trim(),
             last_name: lastName.trim()
@@ -109,16 +112,11 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
           throw error;
         }
       } else {
+        setShowEmailVerification(true);
         toast({
           title: "Registration successful",
-          description: "Your admin account has been created. You can now sign in.",
+          description: "Please check your email to verify your account.",
         });
-        
-        onFirstNameChange('');
-        onLastNameChange('');
-        onPasswordChange('');
-        onInvitationTokenChange('');
-        onSwitchToSignIn();
       }
     } catch (error: any) {
       console.error('Sign up error:', error);
@@ -131,6 +129,40 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({
       setLoading(false);
     }
   };
+
+  if (showEmailVerification) {
+    return (
+      <div className="space-y-4">
+        <Alert className="border-green-200 bg-green-50">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">
+            <strong>Registration Successful!</strong>
+            <br />
+            We've sent a verification email to <strong>{email}</strong>. 
+            Please check your inbox and click the verification link to complete your account setup.
+            <br /><br />
+            <em>Note: The email may take a few minutes to arrive. Don't forget to check your spam folder!</em>
+          </AlertDescription>
+        </Alert>
+        
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowEmailVerification(false)}
+            className="flex-1"
+          >
+            Back to Registration
+          </Button>
+          <Button 
+            onClick={onSwitchToSignIn}
+            className="flex-1 bg-slate-600 hover:bg-slate-700"
+          >
+            Go to Sign In
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSignUp} className="space-y-4">
