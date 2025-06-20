@@ -9,16 +9,176 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          resource_id: string | null
+          resource_type: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource_id?: string | null
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      survey_responses: {
+        Row: {
+          completion_time: unknown | null
+          created_at: string
+          id: string
+          ip_hash: string | null
+          metadata: Json | null
+          participant_id: string | null
+          responses: Json
+          survey_id: string
+          updated_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          completion_time?: unknown | null
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json | null
+          participant_id?: string | null
+          responses: Json
+          survey_id: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          completion_time?: unknown | null
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          metadata?: Json | null
+          participant_id?: string | null
+          responses?: Json
+          survey_id?: string
+          updated_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
+      survey_sessions: {
+        Row: {
+          completed_at: string | null
+          current_question: number | null
+          expires_at: string
+          id: string
+          is_completed: boolean | null
+          participant_id: string | null
+          session_token: string
+          started_at: string
+          survey_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          current_question?: number | null
+          expires_at?: string
+          id?: string
+          is_completed?: boolean | null
+          participant_id?: string | null
+          session_token: string
+          started_at?: string
+          survey_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          current_question?: number | null
+          expires_at?: string
+          id?: string
+          is_completed?: boolean | null
+          participant_id?: string | null
+          session_token?: string
+          started_at?: string
+          survey_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_expired_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_user_role: {
+        Args: { user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
+      submit_survey_response: {
+        Args: {
+          p_survey_id: string
+          p_responses: Json
+          p_completion_time?: unknown
+          p_ip_hash?: string
+        }
+        Returns: string
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "researcher" | "participant"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +293,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "researcher", "participant"],
+    },
   },
 } as const

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,35 +6,42 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, Download, Shield, BarChart3, PieChart, TrendingUp, LogOut, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import AdminLogin from './AdminLogin';
 import DataVisualizations from './DataVisualizations';
-import { getStoredResponses, exportSecureCSV } from '@/utils/secureStorage';
+import { getStoredResponses, exportSecureCSV } from '@/utils/supabaseStorage';
+import { useAuth } from './AuthWrapper';
 
 interface SurveyResponse {
   id: string;
-  surveyId: string;
-  timestamp: string;
+  survey_id: string;
+  participant_id: string;
   responses: Record<string, string>;
+  metadata?: Record<string, any>;
+  ip_hash?: string;
+  user_agent?: string;
+  completion_time?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const AdminDashboard: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [surveyResponses, setSurveyResponses] = useState<SurveyResponse[]>([]);
   const [selectedResponse, setSelectedResponse] = useState<SurveyResponse | null>(null);
   const { toast } = useToast();
+  const { user, signOut, loading } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (user) {
       loadSurveyData();
     }
-  }, [isAuthenticated]);
+  }, [user]);
 
-  const loadSurveyData = () => {
+  const loadSurveyData = async () => {
     try {
-      const responses = getStoredResponses();
+      setIsLoading(true);
+      const responses = await getStoredResponses();
       setSurveyResponses(responses);
-      console.log('Loaded survey responses:', responses.length);
+      console.log('Loaded survey responses from Supabase:', responses.length);
     } catch (error) {
       console.error('Error loading survey data:', error);
       toast({
@@ -41,44 +49,21 @@ const AdminDashboard: React.FC = () => {
         description: "Failed to load survey responses. Please try again.",
         variant: "destructive",
       });
-    }
-  };
-
-  // Temporary authentication - replace with Supabase auth
-  const handleLogin = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-    
-    try {
-      // Simulate authentication delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Temporary hardcoded check - REPLACE WITH SUPABASE AUTH
-      if (email === 'admin@psychology.research' && password === 'SecureAdmin2024!') {
-        setIsAuthenticated(true);
-        toast({
-          title: "Authentication Successful",
-          description: "Welcome to the admin dashboard.",
-        });
-        return true;
-      } else {
-        return false;
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setSurveyResponses([]);
-    setSelectedResponse(null);
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   const handleSecureExport = () => {
@@ -107,8 +92,19 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  if (!isAuthenticated) {
-    return <AdminLogin onLogin={handleLogin} isLoading={isLoading} />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // AuthWrapper will handle redirecting to auth page
   }
 
   return (
@@ -119,36 +115,17 @@ const AdminDashboard: React.FC = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Psychology Research Dashboard</h1>
               <p className="text-gray-600">Mental Health & Cosmetic Surgery Analysis</p>
+              <p className="text-sm text-blue-600 mt-1">Welcome, {user.email}</p>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+              <div className="flex items-center text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
                 <Shield className="w-4 h-4 mr-2" />
-                Security Enhanced
+                Supabase Secured
               </div>
               <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
                 <LogOut className="w-4 h-4" />
                 Logout
               </Button>
-            </div>
-          </div>
-          
-          {/* Security Notice */}
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <div className="flex items-start">
-              <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-red-800 mb-1">Production Security Notice</h3>
-                <p className="text-sm text-red-700">
-                  This application currently uses localStorage for data storage and basic authentication. 
-                  For production use with real research data, please integrate with Supabase for:
-                </p>
-                <ul className="text-sm text-red-700 mt-2 ml-4 list-disc">
-                  <li>Secure authentication & authorization</li>
-                  <li>Encrypted database storage</li>
-                  <li>Row-level security policies</li>
-                  <li>HIPAA/GDPR compliance features</li>
-                </ul>
-              </div>
             </div>
           </div>
         </div>
@@ -170,52 +147,59 @@ const AdminDashboard: React.FC = () => {
           </TabsList>
 
           <TabsContent value="overview">
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Total Responses</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-blue-600">{surveyResponses.length}</div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Female Participants</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-pink-600">
-                    {surveyResponses.filter(r => r.responses.sex === 'Female').length}
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Completion Rate</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-green-600">
-                    {surveyResponses.length > 0 ? '100%' : '0%'}
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">Latest Response</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-sm text-gray-600">
-                    {surveyResponses.length > 0 
-                      ? new Date(surveyResponses[surveyResponses.length - 1].timestamp).toLocaleString()
-                      : 'No responses yet'
-                    }
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            {isLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Loading survey data...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Total Responses</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-blue-600">{surveyResponses.length}</div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Female Participants</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-pink-600">
+                      {surveyResponses.filter(r => r.responses.sex === 'Female').length}
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Completion Rate</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-green-600">
+                      {surveyResponses.length > 0 ? '100%' : '0%'}
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-lg">Latest Response</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm text-gray-600">
+                      {surveyResponses.length > 0 
+                        ? new Date(surveyResponses[0].created_at).toLocaleString()
+                        : 'No responses yet'
+                      }
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="analytics">
@@ -252,10 +236,10 @@ const AdminDashboard: React.FC = () => {
                         <TableCell className="font-mono text-sm">
                           {response.id.slice(-8)}
                         </TableCell>
-                        <TableCell>{response.surveyId}</TableCell>
+                        <TableCell>{response.survey_id}</TableCell>
                         <TableCell>{response.responses.sex || 'N/A'}</TableCell>
                         <TableCell>{response.responses.age || 'N/A'}</TableCell>
-                        <TableCell>{new Date(response.timestamp).toLocaleString()}</TableCell>
+                        <TableCell>{new Date(response.created_at).toLocaleString()}</TableCell>
                         <TableCell>
                           <Button
                             variant="outline"
@@ -286,8 +270,8 @@ const AdminDashboard: React.FC = () => {
               <CardHeader>
                 <CardTitle>Response Details - {selectedResponse.id.slice(-8)}</CardTitle>
                 <p className="text-sm text-gray-600">
-                  Survey: {selectedResponse.surveyId} | 
-                  Completed: {new Date(selectedResponse.timestamp).toLocaleString()}
+                  Survey: {selectedResponse.survey_id} | 
+                  Completed: {new Date(selectedResponse.created_at).toLocaleString()}
                 </p>
               </CardHeader>
               <CardContent>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,8 +7,9 @@ import SurveyCompletion from './SurveyCompletion';
 import { SurveyVariation, getRandomSurvey } from '@/data/surveyVariations';
 import { FileText, Shuffle } from 'lucide-react';
 import { validateSurveyResponse, checkRateLimit } from '@/utils/validation';
-import { saveSecureResponse } from '@/utils/secureStorage';
+import { saveSecureResponse } from '@/utils/supabaseStorage';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from './AuthWrapper';
 
 const RandomizedSurvey: React.FC = () => {
   const [currentSurvey, setCurrentSurvey] = useState<SurveyVariation | null>(null);
@@ -17,6 +19,7 @@ const RandomizedSurvey: React.FC = () => {
   const [hasStarted, setHasStarted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user, loading } = useAuth();
 
   const loadRandomSurvey = () => {
     const survey = getRandomSurvey();
@@ -33,9 +36,25 @@ const RandomizedSurvey: React.FC = () => {
     loadRandomSurvey();
   }, []);
 
+  // If not authenticated, don't render the survey
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // AuthWrapper will handle redirecting to auth page
+  }
+
   const startSurvey = () => {
     // Check rate limiting before starting
-    const clientId = 'session-' + Date.now(); // In production, use better client identification
+    const clientId = user.id;
     if (!checkRateLimit(clientId, 5, 3600000)) { // 5 attempts per hour
       toast({
         title: "Rate Limit Exceeded",
@@ -70,17 +89,17 @@ const RandomizedSurvey: React.FC = () => {
         });
       }
 
-      // Save using secure storage
+      // Save using Supabase storage
       const result = await saveSecureResponse({
         surveyId: currentSurvey.id,
         responses: validation.data
       });
 
       if (result.success) {
-        console.log('Survey response saved securely:', result.id);
+        console.log('Survey response saved securely to Supabase:', result.id);
         toast({
           title: "Response Saved",
-          description: "Your survey response has been recorded securely.",
+          description: "Your survey response has been recorded securely. Thank you for participating!",
         });
         setIsCompleted(true);
       } else {
@@ -152,6 +171,9 @@ const RandomizedSurvey: React.FC = () => {
               {currentSurvey.title}
             </CardTitle>
             <p className="text-gray-600">{currentSurvey.description}</p>
+            <p className="text-sm text-blue-600 mt-2">
+              Welcome, {user.email}
+            </p>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="space-y-4">
@@ -176,7 +198,7 @@ const RandomizedSurvey: React.FC = () => {
               
               <div className="bg-green-50 p-3 rounded-lg border border-green-200">
                 <p className="text-xs text-green-800">
-                  <strong>Data Security:</strong> Your responses are validated, sanitized, and stored securely. All data is anonymized for research purposes only.
+                  <strong>Data Security:</strong> Your responses are validated, sanitized, and stored securely in our encrypted database. All data is anonymized for research purposes only.
                 </p>
               </div>
               
@@ -216,7 +238,7 @@ const RandomizedSurvey: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Saving your responses securely...</p>
+            <p className="text-gray-600">Saving your responses securely to database...</p>
           </div>
         </div>
       )}
