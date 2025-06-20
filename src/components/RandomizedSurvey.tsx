@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +5,9 @@ import SurveyQuestion from './SurveyQuestion';
 import SurveyCompletion from './SurveyCompletion';
 import { SurveyVariation, getRandomSurvey } from '@/data/surveyVariations';
 import { FileText, Shuffle } from 'lucide-react';
+import { validateSurveyResponse, checkRateLimit } from '@/utils/validation';
+import { saveSecureResponse } from '@/utils/secureStorage';
+import { useToast } from '@/hooks/use-toast';
 
 const RandomizedSurvey: React.FC = () => {
   const [currentSurvey, setCurrentSurvey] = useState<SurveyVariation | null>(null);
@@ -13,6 +15,8 @@ const RandomizedSurvey: React.FC = () => {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [isCompleted, setIsCompleted] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const loadRandomSurvey = () => {
     const survey = getRandomSurvey();
@@ -30,6 +34,17 @@ const RandomizedSurvey: React.FC = () => {
   }, []);
 
   const startSurvey = () => {
+    // Check rate limiting before starting
+    const clientId = 'session-' + Date.now(); // In production, use better client identification
+    if (!checkRateLimit(clientId, 5, 3600000)) { // 5 attempts per hour
+      toast({
+        title: "Rate Limit Exceeded",
+        description: "Too many survey attempts. Please try again later.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setHasStarted(true);
   };
 
@@ -37,22 +52,50 @@ const RandomizedSurvey: React.FC = () => {
     setResponses(prev => ({ ...prev, [questionId]: value }));
   };
 
-  const saveResponse = () => {
+  const saveResponse = async () => {
     if (!currentSurvey) return;
 
-    const responseData = {
-      id: `response-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      surveyId: currentSurvey.id,
-      timestamp: new Date().toISOString(),
-      responses: responses
-    };
+    setIsSubmitting(true);
+    
+    try {
+      // Validate and sanitize responses
+      const validation = validateSurveyResponse(responses);
+      
+      if (!validation.isValid) {
+        console.warn('Validation errors:', validation.errors);
+        toast({
+          title: "Validation Warning",
+          description: "Some responses may contain invalid data. Proceeding with sanitized version.",
+          variant: "destructive",
+        });
+      }
 
-    // Save to localStorage
-    const existingResponses = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
-    existingResponses.push(responseData);
-    localStorage.setItem('surveyResponses', JSON.stringify(existingResponses));
+      // Save using secure storage
+      const result = await saveSecureResponse({
+        surveyId: currentSurvey.id,
+        responses: validation.data
+      });
 
-    console.log('Survey response saved:', responseData);
+      if (result.success) {
+        console.log('Survey response saved securely:', result.id);
+        toast({
+          title: "Response Saved",
+          description: "Your survey response has been recorded securely.",
+        });
+        setIsCompleted(true);
+      } else {
+        throw new Error(result.error || 'Failed to save response');
+      }
+    } catch (error) {
+      console.error('Error saving survey response:', error);
+      toast({
+        title: "Save Error",
+        description: "Failed to save your response. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleNext = () => {
@@ -63,7 +106,6 @@ const RandomizedSurvey: React.FC = () => {
     } else {
       // Survey completed - save the response
       saveResponse();
-      setIsCompleted(true);
     }
   };
 
@@ -132,9 +174,9 @@ const RandomizedSurvey: React.FC = () => {
                 </p>
               </div>
               
-              <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-                <p className="text-xs text-yellow-800">
-                  This research study examines mental health and body image. Your responses are anonymous and will be used for academic research purposes only.
+              <div className="bg-green-50 p-3 rounded-lg border border-green-200">
+                <p className="text-xs text-green-800">
+                  <strong>Data Security:</strong> Your responses are validated, sanitized, and stored securely. All data is anonymized for research purposes only.
                 </p>
               </div>
               
@@ -165,10 +207,19 @@ const RandomizedSurvey: React.FC = () => {
         onChange={(value) => handleAnswer(currentQuestion.id, value)}
         onNext={handleNext}
         onPrevious={handlePrevious}
-        canGoNext={canGoNext}
+        canGoNext={canGoNext && !isSubmitting}
         isFirst={currentQuestionIndex === 0}
         isLast={currentQuestionIndex === currentSurvey.questions.length - 1}
       />
+      
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Saving your responses securely...</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

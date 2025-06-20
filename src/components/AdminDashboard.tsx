@@ -1,12 +1,13 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, Download, Lock, BarChart3, PieChart, TrendingUp } from 'lucide-react';
+import { Eye, Download, Shield, BarChart3, PieChart, TrendingUp, LogOut, AlertTriangle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import AdminLogin from './AdminLogin';
 import DataVisualizations from './DataVisualizations';
+import { getStoredResponses, exportSecureCSV } from '@/utils/secureStorage';
 
 interface SurveyResponse {
   id: string;
@@ -17,99 +18,139 @@ interface SurveyResponse {
 
 const AdminDashboard: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [surveyResponses, setSurveyResponses] = useState<SurveyResponse[]>([]);
   const [selectedResponse, setSelectedResponse] = useState<SurveyResponse | null>(null);
-
-  // Simple password authentication (in production, use proper authentication)
-  const ADMIN_PASSWORD = 'psychology2024';
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Load survey responses from localStorage
-    const stored = localStorage.getItem('surveyResponses');
-    if (stored) {
-      setSurveyResponses(JSON.parse(stored));
+    if (isAuthenticated) {
+      loadSurveyData();
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setPassword('');
-    } else {
-      alert('Incorrect password');
+  const loadSurveyData = () => {
+    try {
+      const responses = getStoredResponses();
+      setSurveyResponses(responses);
+      console.log('Loaded survey responses:', responses.length);
+    } catch (error) {
+      console.error('Error loading survey data:', error);
+      toast({
+        title: "Data Load Error",
+        description: "Failed to load survey responses. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
-  const exportToCSV = () => {
-    if (surveyResponses.length === 0) return;
+  // Temporary authentication - replace with Supabase auth
+  const handleLogin = async (email: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
+    
+    try {
+      // Simulate authentication delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Temporary hardcoded check - REPLACE WITH SUPABASE AUTH
+      if (email === 'admin@psychology.research' && password === 'SecureAdmin2024!') {
+        setIsAuthenticated(true);
+        toast({
+          title: "Authentication Successful",
+          description: "Welcome to the admin dashboard.",
+        });
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    // Get all unique question IDs
-    const allQuestionIds = new Set<string>();
-    surveyResponses.forEach(response => {
-      Object.keys(response.responses).forEach(id => allQuestionIds.add(id));
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setSurveyResponses([]);
+    setSelectedResponse(null);
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
     });
+  };
 
-    const headers = ['Response ID', 'Survey ID', 'Timestamp', ...Array.from(allQuestionIds)];
-    const csvContent = [
-      headers.join(','),
-      ...surveyResponses.map(response => [
-        response.id,
-        response.surveyId,
-        response.timestamp,
-        ...Array.from(allQuestionIds).map(id => `"${response.responses[id] || ''}"`)
-      ].join(','))
-    ].join('\n');
+  const handleSecureExport = () => {
+    if (surveyResponses.length === 0) {
+      toast({
+        title: "No Data to Export",
+        description: "There are no survey responses to export.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `survey-responses-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+    try {
+      exportSecureCSV(surveyResponses, true); // Anonymized export
+      toast({
+        title: "Export Successful",
+        description: "Survey data has been exported securely with anonymization.",
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "Failed to export survey data. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-0 shadow-xl">
-          <CardHeader className="text-center pb-4">
-            <div className="flex justify-center mb-4">
-              <div className="bg-blue-100 p-3 rounded-full">
-                <Lock className="w-8 h-8 text-blue-600" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl font-bold text-gray-800">
-              Admin Access
-            </CardTitle>
-            <p className="text-gray-600">Enter password to view survey results</p>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-4">
-              <Input
-                type="password"
-                placeholder="Enter admin password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-              />
-              <Button onClick={handleLogin} className="w-full">
-                Access Dashboard
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AdminLogin onLogin={handleLogin} isLoading={isLoading} />;
   }
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Psychology Research Dashboard</h1>
-          <p className="text-gray-600">Mental Health & Cosmetic Surgery Analysis</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Psychology Research Dashboard</h1>
+              <p className="text-gray-600">Mental Health & Cosmetic Surgery Analysis</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+                <Shield className="w-4 h-4 mr-2" />
+                Security Enhanced
+              </div>
+              <Button variant="outline" onClick={handleLogout} className="flex items-center gap-2">
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </div>
+          </div>
+          
+          {/* Security Notice */}
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-start">
+              <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-red-800 mb-1">Production Security Notice</h3>
+                <p className="text-sm text-red-700">
+                  This application currently uses localStorage for data storage and basic authentication. 
+                  For production use with real research data, please integrate with Supabase for:
+                </p>
+                <ul className="text-sm text-red-700 mt-2 ml-4 list-disc">
+                  <li>Secure authentication & authorization</li>
+                  <li>Encrypted database storage</li>
+                  <li>Row-level security policies</li>
+                  <li>HIPAA/GDPR compliance features</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
@@ -185,12 +226,9 @@ const AdminDashboard: React.FC = () => {
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-semibold">Survey Response Details</h2>
               <div className="space-x-4">
-                <Button onClick={exportToCSV} disabled={surveyResponses.length === 0}>
+                <Button onClick={handleSecureExport} disabled={surveyResponses.length === 0}>
                   <Download className="w-4 h-4 mr-2" />
-                  Export CSV
-                </Button>
-                <Button variant="outline" onClick={() => setIsAuthenticated(false)}>
-                  Logout
+                  Export Secure CSV
                 </Button>
               </div>
             </div>
