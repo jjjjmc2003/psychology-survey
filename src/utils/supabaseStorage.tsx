@@ -31,6 +31,12 @@ export const saveAnonymousResponse = async (responseData: {
   sessionId: string;
 }) => {
   try {
+    console.log('Attempting to save anonymous response:', {
+      surveyId: responseData.surveyId,
+      responseCount: Object.keys(responseData.responses).length,
+      sessionId: responseData.sessionId
+    });
+
     // Validate and sanitize responses
     const validation = validateSurveyResponse(responseData.responses);
     
@@ -47,11 +53,12 @@ export const saveAnonymousResponse = async (responseData: {
     }
 
     // Insert directly into survey_responses table for anonymous users
+    // Make sure participant_id is explicitly null for anonymous submissions
     const { data, error } = await supabase
       .from('survey_responses')
       .insert({
         survey_id: responseData.surveyId,
-        participant_id: null, // Anonymous - no user ID
+        participant_id: null, // Explicitly set to null for anonymous users
         responses: validation.data,
         completion_time: null,
         ip_hash: ipHash,
@@ -66,15 +73,27 @@ export const saveAnonymousResponse = async (responseData: {
       .single();
 
     if (error) {
-      console.error('Supabase error:', error);
+      console.error('Supabase error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       throw error;
     }
 
-    console.log('Anonymous survey response saved securely to Supabase:', data?.id);
+    console.log('Anonymous survey response saved successfully to Supabase:', data?.id);
     return { success: true, id: data?.id };
-  } catch (error) {
-    console.error('Error saving anonymous response:', error);
-    return { success: false, error: 'Failed to save anonymous response securely' };
+  } catch (error: any) {
+    console.error('Error saving anonymous response:', {
+      error: error.message,
+      code: error.code,
+      details: error.details
+    });
+    return { 
+      success: false, 
+      error: `Failed to save response: ${error.message || 'Unknown error'}` 
+    };
   }
 };
 
