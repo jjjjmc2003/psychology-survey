@@ -89,7 +89,7 @@ export const getStoredResponses = async (): Promise<SupabaseSurveyResponse[]> =>
       metadata: item.metadata as Record<string, any> || {},
       ip_hash: item.ip_hash,
       user_agent: item.user_agent,
-      completion_time: item.completion_time,
+      completion_time: item.completion_time ? String(item.completion_time) : null,
       created_at: item.created_at,
       updated_at: item.updated_at
     }));
