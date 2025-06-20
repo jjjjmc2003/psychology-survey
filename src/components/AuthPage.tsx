@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, LogIn, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { UserPlus, LogIn, Mail, Lock, User, AlertCircle, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,7 +33,7 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const redirectUrl = `${window.location.origin}/`;
+      const redirectUrl = `${window.location.origin}/admin`;
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -120,14 +120,19 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center p-6">
       <Card className="max-w-md w-full border-0 shadow-xl">
         <CardHeader className="text-center pb-4">
+          <div className="flex justify-center mb-4">
+            <div className="bg-slate-100 p-3 rounded-full">
+              <Shield className="w-8 h-8 text-slate-600" />
+            </div>
+          </div>
           <CardTitle className="text-2xl font-bold text-gray-800 mb-2">
-            Psychology Research Survey
+            Admin Dashboard Access
           </CardTitle>
           <p className="text-gray-600 text-sm">
-            Secure authentication for research participants
+            Restricted access for research administrators
           </p>
         </CardHeader>
         <CardContent>
@@ -139,7 +144,7 @@ const AuthPage: React.FC = () => {
               </TabsTrigger>
               <TabsTrigger value="signup" className="flex items-center gap-2">
                 <UserPlus className="w-4 h-4" />
-                Sign Up
+                Register
               </TabsTrigger>
             </TabsList>
 
@@ -155,7 +160,7 @@ const AuthPage: React.FC = () => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
+                    placeholder="Enter your admin email"
                     required
                   />
                 </div>
@@ -175,10 +180,10 @@ const AuthPage: React.FC = () => {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-slate-600 hover:bg-slate-700"
                   disabled={loading}
                 >
-                  {loading ? 'Signing in...' : 'Sign In'}
+                  {loading ? 'Signing in...' : 'Sign In to Dashboard'}
                 </Button>
               </form>
             </TabsContent>
@@ -218,14 +223,14 @@ const AuthPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label htmlFor="signup-email" className="flex items-center gap-2">
                     <Mail className="w-4 h-4" />
-                    Email
+                    Admin Email
                   </Label>
                   <Input
                     id="signup-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
+                    placeholder="Enter your admin email"
                     required
                   />
                 </div>
@@ -246,23 +251,23 @@ const AuthPage: React.FC = () => {
                 </div>
                 <Button 
                   type="submit" 
-                  className="w-full bg-green-600 hover:bg-green-700"
+                  className="w-full bg-slate-600 hover:bg-slate-700"
                   disabled={loading}
                 >
-                  {loading ? 'Creating account...' : 'Create Account'}
+                  {loading ? 'Creating account...' : 'Register Admin Account'}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="mt-6 p-4 bg-orange-50 rounded-lg border border-orange-200">
             <div className="flex items-start">
-              <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+              <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5 mr-3 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-blue-800 mb-1">Research Participation</h3>
-                <p className="text-sm text-blue-700">
-                  By creating an account, you consent to participate in this psychology research study. 
-                  Your data will be stored securely and used only for research purposes.
+                <h3 className="font-semibold text-orange-800 mb-1">Administrator Access</h3>
+                <p className="text-sm text-orange-700">
+                  This area is restricted to research administrators and staff. 
+                  Regular survey participants do not need accounts - the survey is anonymous.
                 </p>
               </div>
             </div>

@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import AdminDashboard from "./components/AdminDashboard";
 import AuthPage from "./components/AuthPage";
 import AuthWrapper, { useAuth } from "./components/AuthWrapper";
+import ConsentPage from "./components/ConsentPage";
 
 // Create QueryClient outside of component to prevent recreation on every render
 const queryClient = new QueryClient({
@@ -20,7 +21,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
@@ -35,13 +36,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/admin/auth" replace />;
   }
   
   return <>{children}</>;
 };
 
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+const AdminAuthRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
@@ -56,7 +57,7 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   }
   
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/admin" replace />;
   }
   
   return <>{children}</>;
@@ -70,20 +71,17 @@ const App = () => (
       <BrowserRouter>
         <AuthWrapper>
           <Routes>
-            <Route path="/auth" element={
-              <PublicRoute>
+            <Route path="/" element={<ConsentPage />} />
+            <Route path="/survey" element={<Index />} />
+            <Route path="/admin/auth" element={
+              <AdminAuthRoute>
                 <AuthPage />
-              </PublicRoute>
-            } />
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
+              </AdminAuthRoute>
             } />
             <Route path="/admin" element={
-              <ProtectedRoute>
+              <AdminProtectedRoute>
                 <AdminDashboard />
-              </ProtectedRoute>
+              </AdminProtectedRoute>
             } />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

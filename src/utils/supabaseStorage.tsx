@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { validateSurveyResponse } from './validation';
 
@@ -23,6 +22,60 @@ const hashIP = async (ip: string): Promise<string> => {
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+};
+
+// Save anonymous survey response to Supabase
+export const saveAnonymousResponse = async (responseData: {
+  surveyId: string;
+  responses: Record<string, string>;
+  sessionId: string;
+}) => {
+  try {
+    // Validate and sanitize responses
+    const validation = validateSurveyResponse(responseData.responses);
+    
+    if (!validation.isValid) {
+      console.warn('Validation errors:', validation.errors);
+    }
+
+    // Get client IP hash for rate limiting (in production, this would be server-side)
+    let ipHash = '';
+    try {
+      ipHash = await hashIP('anonymous-session-' + responseData.sessionId + '-' + Date.now());
+    } catch (error) {
+      console.warn('Could not generate IP hash:', error);
+    }
+
+    // Insert directly into survey_responses table for anonymous users
+    const { data, error } = await supabase
+      .from('survey_responses')
+      .insert({
+        survey_id: responseData.surveyId,
+        participant_id: null, // Anonymous - no user ID
+        responses: validation.data,
+        completion_time: null,
+        ip_hash: ipHash,
+        user_agent: navigator.userAgent,
+        metadata: {
+          session_id: responseData.sessionId,
+          anonymous: true,
+          timestamp: new Date().toISOString()
+        }
+      })
+      .select('id')
+      .single();
+
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
+    console.log('Anonymous survey response saved securely to Supabase:', data?.id);
+    return { success: true, id: data?.id };
+  } catch (error) {
+    console.error('Error saving anonymous response:', error);
+    return { success: false, error: 'Failed to save anonymous response securely' };
+  }
 };
 
 // Save survey response to Supabase
@@ -115,6 +168,7 @@ export const exportSecureCSV = (responses: SupabaseSurveyResponse[], anonymize: 
     anonymize ? 'Response Hash' : 'Response ID',
     'Survey ID',
     'Timestamp',
+    'Type',
     ...Array.from(allQuestionIds)
   ];
   
@@ -124,6 +178,7 @@ export const exportSecureCSV = (responses: SupabaseSurveyResponse[], anonymize: 
       anonymize ? response.id.slice(-8) : response.id,
       response.survey_id,
       response.created_at,
+      response.participant_id ? 'Authenticated' : 'Anonymous',
       ...Array.from(allQuestionIds).map(id => `"${response.responses[id] || ''}"`)
     ].join(','))
   ].join('\n');
@@ -143,13 +198,13 @@ export const exportSecureCSV = (responses: SupabaseSurveyResponse[], anonymize: 
   });
 };
 
-// Check if user is authenticated
+// Check if user is authenticated (for admin functions)
 export const checkAuth = async () => {
   const { data: { session } } = await supabase.auth.getSession();
   return session?.user || null;
 };
 
-// Get user profile
+// Get user profile (for admin functions)
 export const getUserProfile = async () => {
   const { data, error } = await supabase
     .from('profiles')
