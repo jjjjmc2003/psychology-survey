@@ -106,13 +106,10 @@ const AuthPage: React.FC = () => {
         return;
       }
 
-      const redirectUrl = `${window.location.origin}/admin`;
-      
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
           data: {
             first_name: firstName.trim(),
             last_name: lastName.trim()
@@ -132,9 +129,6 @@ const AuthPage: React.FC = () => {
           throw error;
         }
       } else {
-        // Sign out immediately after signup to prevent auto-login for invitations
-        await supabase.auth.signOut();
-        
         toast({
           title: "Registration successful",
           description: "Your admin account has been created. You can now sign in.",
