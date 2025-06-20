@@ -9,11 +9,6 @@ import { UserPlus, LogIn, Mail, Lock, User, Shield, Key } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-const AUTH_CONFIG = {
-  ADMIN_EMAIL_DOMAINS: ['@psychology.research', '@admin.research'],
-  ADMIN_EMAILS: ['admin@lovable.dev', 'research@admin.com'],
-};
-
 const AuthPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -24,12 +19,6 @@ const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('signin');
   const { toast } = useToast();
 
-  const isAdminEmail = (email: string): boolean => {
-    const lowerEmail = email.toLowerCase();
-    return AUTH_CONFIG.ADMIN_EMAIL_DOMAINS.some(domain => lowerEmail.includes(domain)) ||
-           AUTH_CONFIG.ADMIN_EMAILS.some(adminEmail => lowerEmail === adminEmail.toLowerCase());
-  };
-
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -37,15 +26,6 @@ const AuthPage: React.FC = () => {
       toast({
         title: "Missing information",
         description: "Please enter both first and last name.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!isAdminEmail(email)) {
-      toast({
-        title: "Invalid email domain",
-        description: "Admin registration is restricted to authorized email domains.",
         variant: "destructive",
       });
       return;
@@ -63,6 +43,7 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // First validate the invitation token
       const { data: isValid, error: validationError } = await supabase
         .rpc('validate_admin_signup', {
           p_email: email,
@@ -70,7 +51,13 @@ const AuthPage: React.FC = () => {
         });
 
       if (validationError) {
-        throw new Error('Failed to validate invitation token');
+        console.error('Validation error:', validationError);
+        toast({
+          title: "Validation failed",
+          description: "Failed to validate invitation token. Please try again.",
+          variant: "destructive",
+        });
+        return;
       }
 
       if (!isValid) {
@@ -82,6 +69,7 @@ const AuthPage: React.FC = () => {
         return;
       }
 
+      // If validation passes, create the user account
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -278,7 +266,7 @@ const AuthPage: React.FC = () => {
                     required
                   />
                   <p className="text-xs text-gray-500">
-                    Must be from an authorized domain
+                    Must have a valid invitation token
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -331,7 +319,7 @@ const AuthPage: React.FC = () => {
                 <h3 className="font-semibold text-green-800 mb-1">Secure Access</h3>
                 <p className="text-sm text-green-700">
                   Admin registration requires a valid invitation token from an existing administrator. 
-                  Check your email for the invitation token and copy it exactly as shown.
+                  The invitation token validates your authorization regardless of email domain.
                 </p>
               </div>
             </div>
