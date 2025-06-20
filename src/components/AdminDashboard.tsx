@@ -1,14 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Eye, Download, Shield, BarChart3, PieChart, TrendingUp, LogOut, AlertTriangle } from 'lucide-react';
+import { Eye, Download, Shield, BarChart3, PieChart, TrendingUp, LogOut, AlertTriangle, Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import DataVisualizations from './DataVisualizations';
 import { getStoredResponses, exportSecureCSV } from '@/utils/supabaseStorage';
 import { useAuth } from './AuthWrapper';
+import { supabase } from '@/integrations/supabase/client';
 
 // Define the interface that matches our Supabase data structure
 interface AdminSurveyResponse {
@@ -88,6 +89,40 @@ const AdminDashboard: React.FC = () => {
       toast({
         title: "Export Failed",
         description: "Failed to export survey data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteResponse = async (responseId: string) => {
+    try {
+      const { error } = await supabase
+        .from('survey_responses')
+        .delete()
+        .eq('id', responseId);
+
+      if (error) {
+        console.error('Error deleting survey response:', error);
+        toast({
+          title: "Delete Failed",
+          description: "Failed to delete survey response. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Remove the deleted response from local state
+      setSurveyResponses(prev => prev.filter(response => response.id !== responseId));
+      
+      toast({
+        title: "Response Deleted",
+        description: "Survey response has been successfully deleted.",
+      });
+    } catch (error) {
+      console.error('Error deleting survey response:', error);
+      toast({
+        title: "Delete Failed",
+        description: "Failed to delete survey response. Please try again.",
         variant: "destructive",
       });
     }
@@ -253,14 +288,45 @@ const AdminDashboard: React.FC = () => {
                         <TableCell>{response.responses.age || 'N/A'}</TableCell>
                         <TableCell>{new Date(response.created_at).toLocaleString()}</TableCell>
                         <TableCell>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedResponse(response)}
-                          >
-                            <Eye className="w-4 h-4 mr-1" />
-                            View
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setSelectedResponse(response)}
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              View
+                            </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-1" />
+                                  Delete
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete this survey response.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleDeleteResponse(response.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
