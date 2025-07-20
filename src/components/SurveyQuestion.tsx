@@ -1,18 +1,26 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import groupAImages from '@/assets/group-a-images.png';
+import groupBImages from '@/assets/group-b-images.png';
 
 export interface Question {
   id: string;
-  type: 'multiple-choice' | 'text' | 'rating';
+  type: 'multiple-choice' | 'multi-select' | 'text' | 'rating' | 'image-display' | 'dropdown';
   question: string;
   options?: string[];
   required?: boolean;
+  imageGroup?: 'A' | 'B';
+  imageSrc?: string;
+  instruction?: string;
+  scale?: { min: number; max: number; labels?: string[] };
 }
 
 interface SurveyQuestionProps {
@@ -42,6 +50,22 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
 }) => {
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
 
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(() => {
+    try {
+      return value ? JSON.parse(value) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleMultiSelectChange = (option: string, checked: boolean) => {
+    const newSelected = checked 
+      ? [...selectedOptions, option]
+      : selectedOptions.filter(item => item !== option);
+    setSelectedOptions(newSelected);
+    onChange(JSON.stringify(newSelected));
+  };
+
   const renderQuestionContent = () => {
     switch (question.type) {
       case 'multiple-choice':
@@ -57,6 +81,71 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
             ))}
           </RadioGroup>
         );
+      
+      case 'multi-select':
+        return (
+          <div className="space-y-3">
+            {question.options?.map((option, index) => (
+              <div key={index} className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                <Checkbox
+                  id={`checkbox-${index}`}
+                  checked={selectedOptions.includes(option)}
+                  onCheckedChange={(checked) => handleMultiSelectChange(option, checked as boolean)}
+                />
+                <Label htmlFor={`checkbox-${index}`} className="flex-1 cursor-pointer">
+                  {option}
+                </Label>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'dropdown':
+        return (
+          <Select value={value} onValueChange={onChange}>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select an option..." />
+            </SelectTrigger>
+            <SelectContent>
+              {question.options?.map((option, index) => (
+                <SelectItem key={index} value={option}>
+                  {option}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+
+      case 'image-display':
+        const imageToShow = question.imageGroup === 'A' ? groupAImages : groupBImages;
+        return (
+          <div className="space-y-6">
+            {question.instruction && (
+              <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <p className="text-blue-800 font-medium">{question.instruction}</p>
+              </div>
+            )}
+            <div className="flex justify-center">
+              <img 
+                src={imageToShow} 
+                alt={`Survey images - Group ${question.imageGroup}`}
+                className="max-w-full h-auto rounded-lg shadow-lg"
+              />
+            </div>
+            <div className="text-center">
+              <Button 
+                onClick={() => {
+                  onChange('viewed');
+                  setTimeout(onNext, 500);
+                }}
+                className="mt-4"
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        );
+
       case 'text':
         return (
           <Textarea
@@ -66,24 +155,37 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
             className="min-h-[120px] resize-none"
           />
         );
+
       case 'rating':
+        const scale = question.scale || { min: 1, max: 5 };
+        const range = Array.from({ length: scale.max - scale.min + 1 }, (_, i) => scale.min + i);
+        
         return (
-          <div className="flex justify-center space-x-2">
-            {[1, 2, 3, 4, 5].map((rating) => (
-              <button
-                key={rating}
-                onClick={() => onChange(rating.toString())}
-                className={`w-12 h-12 rounded-full border-2 transition-all duration-200 ${
-                  value === rating.toString()
-                    ? 'bg-blue-500 border-blue-500 text-white'
-                    : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
-                }`}
-              >
-                {rating}
-              </button>
-            ))}
+          <div className="space-y-4">
+            <div className="flex justify-center space-x-2 flex-wrap">
+              {range.map((rating) => (
+                <button
+                  key={rating}
+                  onClick={() => onChange(rating.toString())}
+                  className={`w-12 h-12 rounded-full border-2 transition-all duration-200 ${
+                    value === rating.toString()
+                      ? 'bg-blue-500 border-blue-500 text-white'
+                      : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'
+                  }`}
+                >
+                  {rating}
+                </button>
+              ))}
+            </div>
+            {scale.labels && (
+              <div className="flex justify-between text-sm text-gray-600 px-2">
+                <span>{scale.labels[0]}</span>
+                <span>{scale.labels[1]}</span>
+              </div>
+            )}
           </div>
         );
+
       default:
         return null;
     }
