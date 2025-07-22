@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
-import { FileText, ChevronDown } from 'lucide-react';
+import { FileText, ChevronDown, Shield, Lock } from 'lucide-react';
 import keiserLogo from '@/assets/keiser-logo.png';
 
 const ConsentPage: React.FC = () => {
@@ -188,13 +188,17 @@ const ConsentPage: React.FC = () => {
               <p>The participant will be given one copy of this consent form. One copy of this form is to be kept by the investigator for the duration of the study.</p>
             </div>
 
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-6 border-t border-gray-200">
               <Button 
-                variant="ghost" 
                 onClick={handleAdminLogin}
-                className="w-full text-xs text-gray-500 hover:text-gray-700"
+                variant="outline"
+                className="w-full py-3 bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200 hover:from-slate-100 hover:to-gray-100 hover:border-slate-300 text-slate-700 hover:text-slate-800 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
               >
-                Admin Login
+                <div className="flex items-center justify-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  <span>Administrator Access</span>
+                  <Lock className="w-3 h-3 opacity-60" />
+                </div>
               </Button>
             </div>
           </CardContent>
