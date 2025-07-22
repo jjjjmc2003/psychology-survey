@@ -65,7 +65,7 @@ const ConsentPage: React.FC = () => {
                 <div className="space-y-2">
                   <p><strong>Title of Study:</strong> Investigating the Impact of Image Presentation Order on Survey Response Patterns</p>
                   <p><strong>Student Investigator:</strong> Martha Castillo, Psychology Student, Keiser University</p>
-                  <p><strong>Faculty Advisor:</strong> Dr. Lowry Daniels, Associate Professor of Psychology, Keiser University</p>
+                  <p><strong>Faculty Advisor:</strong> Dr. Lory Daniels, Associate Professor of Psychology, Keiser University</p>
                 </div>
               </div>
 
@@ -184,7 +184,7 @@ const ConsentPage: React.FC = () => {
             <Separator className="my-6" />
 
             <div className="text-xs text-gray-500 space-y-2">
-              <p>If you have further questions about this research project, please contact the student investigator, Martha Castillo, at mcastillo@keiseru.edu or the faculty advisor, Dr. Lowry Daniels, at ldaniels@keiseru.edu. If you have questions about your rights as a research participant or if you have a research related complaint, please contact The IRB Chairperson at: (954) 318-1620.</p>
+              <p>If you have further questions about this research project, please contact the student investigator, Martha Castillo, at mcastillo@keiseru.edu or the faculty advisor, Dr. Lory Daniels, at ldaniels@keiseru.edu. If you have questions about your rights as a research participant or if you have a research related complaint, please contact The IRB Chairperson at: (954) 318-1620.</p>
               <p>The participant will be given one copy of this consent form. One copy of this form is to be kept by the investigator for the duration of the study.</p>
             </div>
 
