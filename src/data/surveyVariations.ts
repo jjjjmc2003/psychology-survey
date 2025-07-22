@@ -62,13 +62,17 @@ const demographicQuestions: Question[] = [
 ];
 
 // Image display questions for randomization
-const imageQuestions: Question[] = [
+const generateImageQuestions = (imageGroup: 'A' | 'B'): Question[] => [
   {
     id: 'image-display',
     type: 'image-display',
-    question: 'Please view the following images carefully',
-    instruction: '', // Will be set based on group
-    imageGroup: 'A', // Will be randomized
+    question: imageGroup === 'A' 
+      ? 'GROUP A – Unedited Images Only' 
+      : 'GROUP B – Unedited + Edited Images',
+    instruction: imageGroup === 'A' 
+      ? 'Please view the following 5 unedited images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.'
+      : 'Please view the following 5 sets of images. Each set shows the original image followed by an edited version. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.',
+    imageGroup: imageGroup,
     required: true,
   },
   {
@@ -240,24 +244,13 @@ export const generateRandomizedSurvey = (): SurveyVariation => {
   // Randomly assign to Group A or B
   const imageGroup: 'A' | 'B' = Math.random() < 0.5 ? 'A' : 'B';
   
-  // Update image questions based on group
-  const updatedImageQuestions: Question[] = imageQuestions.map(question => {
-    if (question.id === 'image-display') {
-      return {
-        ...question,
-        imageGroup: imageGroup,
-        instruction: imageGroup === 'A' 
-          ? 'Please view the following 5 unedited images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.'
-          : 'Please view the following 5 sets of images. Each set shows the original image followed by an edited version. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.'
-      } as Question;
-    }
-    return question;
-  });
+  // Generate image questions based on group
+  const imageQuestions = generateImageQuestions(imageGroup);
 
   // Combine all questions in order
   const allQuestions = [
     ...demographicQuestions,
-    ...updatedImageQuestions,
+    ...imageQuestions,
     ...bissQuestions,
     ...acssQuestions,
   ];
