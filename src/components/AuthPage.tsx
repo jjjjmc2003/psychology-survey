@@ -2,11 +2,14 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserPlus, LogIn, Shield } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { UserPlus, LogIn, Shield, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { SignInForm } from './auth/SignInForm';
 import { SignUpForm } from './auth/SignUpForm';
 
 const AuthPage: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -18,7 +21,16 @@ const AuthPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex items-center justify-center p-6">
       <Card className="max-w-md w-full border-0 shadow-xl">
         <CardHeader className="text-center pb-4">
-          <div className="flex justify-center mb-4">
+          <div className="flex justify-between items-start mb-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Consent Form
+            </Button>
             <div className="bg-slate-100 p-3 rounded-full">
               <Shield className="w-8 h-8 text-slate-600" />
             </div>
