@@ -145,16 +145,6 @@ const RandomizedSurvey: React.FC = () => {
           </CardHeader>
           <CardContent className="pt-0">
             <div className="space-y-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <div className="flex items-center text-sm text-blue-700 mb-1">
-                  <Shuffle className="w-4 h-4 mr-2" />
-                  Randomized Survey
-                </div>
-                <p className="text-xs text-blue-600">
-                  33 questions total (30 standard + 3 randomized)
-                </p>
-              </div>
-              
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-1">
                   {currentSurvey.questions.length} questions
