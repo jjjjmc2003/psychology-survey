@@ -190,7 +190,7 @@ const ConsentPage: React.FC = () => {
                   placeholder="Type your full name as electronic signature"
                   value={participantSignature}
                   onChange={(e) => setParticipantSignature(e.target.value)}
-                  className="mt-1"
+                  className="mt-1 font-signature text-lg"
                   required
                 />
               </div>
