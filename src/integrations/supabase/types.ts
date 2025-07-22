@@ -83,36 +83,6 @@ export type Database = {
         }
         Relationships: []
       }
-      consent_records: {
-        Row: {
-          consent_given_at: string
-          created_at: string
-          id: string
-          ip_address: unknown | null
-          participant_name: string
-          participant_signature: string
-          user_agent: string | null
-        }
-        Insert: {
-          consent_given_at?: string
-          created_at?: string
-          id?: string
-          ip_address?: unknown | null
-          participant_name: string
-          participant_signature: string
-          user_agent?: string | null
-        }
-        Update: {
-          consent_given_at?: string
-          created_at?: string
-          id?: string
-          ip_address?: unknown | null
-          participant_name?: string
-          participant_signature?: string
-          user_agent?: string | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string

@@ -1,75 +1,21 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
 import { FileText, ChevronDown } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import keiserLogo from '@/assets/keiser-logo.png';
 
 const ConsentPage: React.FC = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const signatureRef = useRef<HTMLDivElement>(null);
-  const [participantName, setParticipantName] = useState('');
-  const [participantSignature, setParticipantSignature] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const consentRef = useRef<HTMLDivElement>(null);
 
-  const handleConsent = async () => {
-    if (!participantName.trim() || !participantSignature.trim()) {
-      toast({
-        title: "Missing Information",
-        description: "Please enter both your name and signature before consenting.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    try {
-      const { error } = await supabase
-        .from('consent_records')
-        .insert({
-          participant_name: participantName.trim(),
-          participant_signature: participantSignature.trim(),
-          ip_address: null, // Will be set by the database
-          user_agent: navigator.userAgent,
-        });
-
-      if (error) {
-        console.error('Error saving consent:', error);
-        toast({
-          title: "Error",
-          description: "There was an error saving your consent. Please try again.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: "Consent Recorded",
-        description: "Your consent has been successfully recorded.",
-      });
-
-      navigate('/survey');
-    } catch (error) {
-      console.error('Error saving consent:', error);
-      toast({
-        title: "Error",
-        description: "There was an error saving your consent. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleConsent = () => {
+    navigate('/survey');
   };
 
-  const scrollToSignature = () => {
-    signatureRef.current?.scrollIntoView({ 
+  const scrollToConsent = () => {
+    consentRef.current?.scrollIntoView({ 
       behavior: 'smooth', 
       block: 'center' 
     });
@@ -84,10 +30,10 @@ const ConsentPage: React.FC = () => {
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <Button
-          onClick={scrollToSignature}
+          onClick={scrollToConsent}
           size="lg"
           className="rounded-full h-14 w-14 shadow-lg bg-blue-600 hover:bg-blue-700 text-white"
-          title="Scroll to signature section"
+          title="Scroll to consent section"
         >
           <ChevronDown className="w-6 h-6" />
         </Button>
@@ -201,12 +147,12 @@ const ConsentPage: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Signature Section */}
-        <Card ref={signatureRef} className="mt-8 shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
+        {/* Consent Section */}
+        <Card ref={consentRef} className="mt-8 shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
           <CardHeader className="pb-4">
             <CardTitle className="text-center text-xl font-bold text-blue-800 flex items-center justify-center gap-2">
               <FileText className="w-6 h-6" />
-              Authorization & Electronic Signature
+              Authorization & Consent
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -214,70 +160,16 @@ const ConsentPage: React.FC = () => {
               <h4 className="font-bold mb-4 text-gray-800 text-base">Authorization</h4>
               <div className="space-y-3 text-gray-600 text-sm">
                 <p>I understand the explanation provided to me. I have had all my questions answered to my satisfaction, and I voluntarily agree to participate in this study. I have been given a copy of this consent form. If I do not participate, there will be no penalty or loss of rights. I can stop participating at any time, even after I have started.</p>
-                <p className="font-semibold text-blue-700">I agree to participate in the study. My signature below also indicates that I have received a copy of this consent form.</p>
-              </div>
-            </div>
-            
-            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg border-2 border-yellow-200">
-              <h4 className="font-bold mb-4 text-orange-800 text-lg text-center">Complete Your Electronic Signature</h4>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="participantName" className="font-bold text-gray-700">
-                    Full Name (please print):
-                  </Label>
-                  <Input
-                    id="participantName"
-                    type="text"
-                    placeholder="Enter your full legal name"
-                    value={participantName}
-                    onChange={(e) => setParticipantName(e.target.value)}
-                    className="mt-1 text-base border-2 border-gray-300 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="participantSignature" className="font-bold text-gray-700">
-                    Electronic Signature:
-                  </Label>
-                  <Input
-                    id="participantSignature"
-                    type="text"
-                    placeholder="Type your full name as electronic signature"
-                    value={participantSignature}
-                    onChange={(e) => setParticipantSignature(e.target.value)}
-                    className="mt-1 font-signature text-xl border-2 border-gray-300 focus:border-blue-500"
-                    required
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Your signature will appear in cursive script</p>
-                </div>
-                
-                <div className="bg-white p-3 rounded border">
-                  <Label className="font-bold text-gray-700">Date:</Label>
-                  <p className="text-gray-600 mt-1">{new Date().toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}</p>
-                </div>
+                <p className="font-semibold text-blue-700">I agree to participate in the study. Clicking the consent button below indicates that I have received a copy of this consent form.</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <Button 
                 onClick={handleConsent}
-                disabled={isSubmitting || !participantName.trim() || !participantSignature.trim()}
-                className="w-full py-6 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-xl disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full py-6 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-xl shadow-lg"
               >
-                {isSubmitting ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Recording Consent...
-                  </div>
-                ) : (
-                  '✓ I Consent to Participate in This Study'
-                )}
+                ✓ I Consent to Participate in This Study
               </Button>
               
               <Button 
