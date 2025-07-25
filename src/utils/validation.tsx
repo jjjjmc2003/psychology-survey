@@ -68,8 +68,25 @@ export const checkServerRateLimit = async (
   maxAttempts: number = 5, 
   windowMinutes: number = 15
 ): Promise<boolean> => {
-  // Always return true for now to avoid blocking
-  return true;
+  try {
+    const { supabase } = await import('@/integrations/supabase/client');
+    const { data, error } = await supabase.rpc('check_rate_limit', {
+      p_identifier: identifier,
+      p_action_type: actionType,
+      p_max_attempts: maxAttempts,
+      p_window_minutes: windowMinutes
+    });
+    
+    if (error) {
+      console.error('Rate limit check failed:', error);
+      return false; // Fail safe - block on error
+    }
+    
+    return data === true;
+  } catch (error) {
+    console.error('Rate limit check error:', error);
+    return false; // Fail safe - block on error
+  }
 };
 
 // Legacy client-side rate limiting (kept for fallback)
