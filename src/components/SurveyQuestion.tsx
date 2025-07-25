@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import groupAImages from '@/assets/group-a-images.png';
+import groupAImagesAlt from '@/assets/group-a-images-alt.png';
 import groupBImages from '@/assets/group-b-images.png';
 
 export interface Question {
@@ -117,8 +118,16 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
         );
 
       case 'image-display':
+        // Randomly select between two Group A images
+        const getGroupAImage = () => {
+          const randomChoice = Math.floor(Math.random() * 2);
+          return randomChoice === 0 
+            ? '/lovable-uploads/9b44d1b9-8638-46a4-ac79-71c85842b006.png'
+            : '/group-a-images-alt.png';
+        };
+        
         const imageToShow = question.imageGroup === 'A' 
-          ? '/lovable-uploads/9b44d1b9-8638-46a4-ac79-71c85842b006.png'
+          ? getGroupAImage()
           : groupBImages;
         return (
           <div className="space-y-6">
