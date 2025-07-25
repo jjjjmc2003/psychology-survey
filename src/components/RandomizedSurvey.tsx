@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import SurveyQuestion from './SurveyQuestion';
 import SurveyCompletion from './SurveyCompletion';
 import { SurveyVariation, getRandomSurvey } from '@/data/surveyVariations';
-import { FileText, Shuffle } from 'lucide-react';
+import { FileText, Shuffle, ArrowLeft } from 'lucide-react';
 import { validateSurveyResponse } from '@/utils/validation';
 import { saveAnonymousResponse } from '@/utils/supabaseStorage';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const RandomizedSurvey: React.FC = () => {
   const [currentSurvey, setCurrentSurvey] = useState<SurveyVariation | null>(null);
@@ -18,6 +19,7 @@ const RandomizedSurvey: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sessionId, setSessionId] = useState<string>('');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const loadRandomSurvey = () => {
     const survey = getRandomSurvey();
@@ -160,12 +162,23 @@ const RandomizedSurvey: React.FC = () => {
                 </p>
               </div>
               
-              <Button 
-                onClick={startSurvey}
-                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium"
-              >
-                Begin Survey
-              </Button>
+              <div className="space-y-3">
+                <Button 
+                  onClick={startSurvey}
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                >
+                  Begin Survey
+                </Button>
+                
+                <Button 
+                  onClick={() => navigate('/')}
+                  variant="outline"
+                  className="w-full py-3"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Consent Form
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
