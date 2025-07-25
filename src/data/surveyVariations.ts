@@ -70,8 +70,8 @@ const generateImageQuestions = (imageGroup: 'A' | 'B'): Question[] => [
       ? '' 
       : '',
     instruction: imageGroup === 'A' 
-      ? 'Please view the following 5 images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.'
-      : 'Please view the following 5 images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.',
+      ? 'Please view the following images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.'
+      : 'Please view the following images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.',
     imageGroup: imageGroup,
     required: true,
   },
