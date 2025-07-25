@@ -37,22 +37,9 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     if (user) {
       loadSurveyData();
-      logAdminAction('dashboard_accessed', 'admin_dashboard');
     }
   }, [user]);
 
-  const logAdminAction = async (action: string, resourceType: string, resourceId?: string, details?: Record<string, any>) => {
-    try {
-      await supabase.rpc('log_admin_action', {
-        p_action: action,
-        p_resource_type: resourceType,
-        p_resource_id: resourceId,
-        p_details: details || {}
-      });
-    } catch (error) {
-      console.warn('Failed to log admin action:', error);
-    }
-  };
 
   const loadSurveyData = async () => {
     try {
@@ -74,7 +61,6 @@ const AdminDashboard: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      await logAdminAction('admin_logout', 'auth_session');
       await signOut();
       toast({
         title: "Logged Out",
@@ -96,11 +82,6 @@ const AdminDashboard: React.FC = () => {
     }
 
     try {
-      await logAdminAction('data_export', 'survey_responses', undefined, {
-        response_count: surveyResponses.length,
-        export_type: 'anonymized_csv'
-      });
-      
       exportSecureCSV(surveyResponses, true); // Anonymized export
       toast({
         title: "Export Successful",
@@ -118,8 +99,6 @@ const AdminDashboard: React.FC = () => {
 
   const handleDeleteResponse = async (responseId: string) => {
     try {
-      await logAdminAction('response_delete_attempt', 'survey_response', responseId);
-      
       const { error } = await supabase
         .from('survey_responses')
         .delete()
@@ -127,7 +106,6 @@ const AdminDashboard: React.FC = () => {
 
       if (error) {
         console.error('Error deleting survey response:', error);
-        await logAdminAction('response_delete_failed', 'survey_response', responseId, { error: error.message });
         toast({
           title: "Delete Failed",
           description: "Failed to delete survey response. Please try again.",
@@ -139,14 +117,12 @@ const AdminDashboard: React.FC = () => {
       // Remove the deleted response from local state
       setSurveyResponses(prev => prev.filter(response => response.id !== responseId));
       
-      await logAdminAction('response_deleted', 'survey_response', responseId);
       toast({
         title: "Response Deleted",
         description: "Survey response has been successfully deleted.",
       });
     } catch (error) {
       console.error('Error deleting survey response:', error);
-      await logAdminAction('response_delete_error', 'survey_response', responseId, { error: String(error) });
       toast({
         title: "Delete Failed",
         description: "Failed to delete survey response. Please try again.",
@@ -331,10 +307,7 @@ const AdminDashboard: React.FC = () => {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => {
-                                setSelectedResponse(response);
-                                logAdminAction('response_viewed', 'survey_response', response.id);
-                              }}
+                              onClick={() => setSelectedResponse(response)}
                             >
                               <Eye className="w-4 h-4 mr-1" />
                               View

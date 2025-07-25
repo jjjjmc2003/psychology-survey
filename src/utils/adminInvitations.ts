@@ -72,13 +72,6 @@ export const createAdminInvitation = async (email: string): Promise<{ success: b
       // Don't fail the invitation creation if email fails
     }
 
-    // Log the admin action
-    await supabase.rpc('log_admin_action', {
-      p_action: 'admin_invitation_created',
-      p_resource_type: 'admin_invitation',
-      p_resource_id: data.id,
-      p_details: { invited_email: email }
-    });
 
     return { success: true, invitation: data };
   } catch (error: any) {
@@ -121,12 +114,6 @@ export const revokeAdminInvitation = async (invitationId: string): Promise<{ suc
       throw error;
     }
 
-    // Log the admin action
-    await supabase.rpc('log_admin_action', {
-      p_action: 'admin_invitation_revoked',
-      p_resource_type: 'admin_invitation',
-      p_resource_id: invitationId
-    });
 
     return { success: true };
   } catch (error: any) {
