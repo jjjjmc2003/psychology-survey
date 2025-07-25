@@ -8,8 +8,6 @@ interface SupabaseSurveyResponse {
   participant_id: string | null;
   responses: Record<string, string>;
   metadata?: Record<string, any>;
-  ip_hash?: string | null;
-  user_agent?: string | null;
   completion_time?: string | null;
   created_at: string;
   updated_at: string;
@@ -64,13 +62,13 @@ export const saveAnonymousResponse = async (responseData: {
         participant_id: null, // Anonymous
         responses: responseData.responses,
         completion_time: null,
-        ip_hash: sessionHash,
-        user_agent: navigator.userAgent?.slice(0, 200) || 'unknown',
         metadata: {
           session_id: responseData.sessionId,
           anonymous: true,
           timestamp: new Date().toISOString(),
-          version: '1.0'
+          version: '1.0',
+          session_hash: sessionHash,
+          user_agent: navigator.userAgent?.slice(0, 200) || 'unknown'
         }
       })
       .select('id')
@@ -133,7 +131,7 @@ export const saveSecureResponse = async (responseData: {
       p_survey_id: responseData.surveyId,
       p_responses: validation.data,
       p_completion_time: null,
-      p_ip_hash: sessionHash
+      p_ip_hash: null
     });
 
     if (error) {
@@ -169,8 +167,6 @@ export const getStoredResponses = async (): Promise<SupabaseSurveyResponse[]> =>
       participant_id: item.participant_id,
       responses: item.responses as Record<string, string>,
       metadata: item.metadata as Record<string, any> || {},
-      ip_hash: item.ip_hash,
-      user_agent: item.user_agent,
       completion_time: item.completion_time ? String(item.completion_time) : null,
       created_at: item.created_at,
       updated_at: item.updated_at
