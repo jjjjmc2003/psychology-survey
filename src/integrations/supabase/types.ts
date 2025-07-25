@@ -143,42 +143,6 @@ export type Database = {
         }
         Relationships: []
       }
-      survey_sessions: {
-        Row: {
-          completed_at: string | null
-          current_question: number | null
-          expires_at: string
-          id: string
-          is_completed: boolean | null
-          participant_id: string | null
-          session_token: string
-          started_at: string
-          survey_id: string
-        }
-        Insert: {
-          completed_at?: string | null
-          current_question?: number | null
-          expires_at?: string
-          id?: string
-          is_completed?: boolean | null
-          participant_id?: string | null
-          session_token: string
-          started_at?: string
-          survey_id: string
-        }
-        Update: {
-          completed_at?: string | null
-          current_question?: number | null
-          expires_at?: string
-          id?: string
-          is_completed?: boolean | null
-          participant_id?: string | null
-          session_token?: string
-          started_at?: string
-          survey_id?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never
