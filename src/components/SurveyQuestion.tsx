@@ -123,7 +123,7 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
           const randomChoice = Math.floor(Math.random() * 2);
           return randomChoice === 0 
             ? '/lovable-uploads/9b44d1b9-8638-46a4-ac79-71c85842b006.png'
-            : '/group-a-images-alt.png';
+            : '/lovable-uploads/3aeb7f63-410a-434e-8298-635db703e8d7.png';
         };
         
         const imageToShow = question.imageGroup === 'A' 
