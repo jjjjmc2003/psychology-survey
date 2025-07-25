@@ -115,37 +115,31 @@ export type Database = {
           completion_time: unknown | null
           created_at: string
           id: string
-          ip_hash: string | null
           metadata: Json | null
           participant_id: string | null
           responses: Json
           survey_id: string
           updated_at: string
-          user_agent: string | null
         }
         Insert: {
           completion_time?: unknown | null
           created_at?: string
           id?: string
-          ip_hash?: string | null
           metadata?: Json | null
           participant_id?: string | null
           responses: Json
           survey_id: string
           updated_at?: string
-          user_agent?: string | null
         }
         Update: {
           completion_time?: unknown | null
           created_at?: string
           id?: string
-          ip_hash?: string | null
           metadata?: Json | null
           participant_id?: string | null
           responses?: Json
           survey_id?: string
           updated_at?: string
-          user_agent?: string | null
         }
         Relationships: []
       }
