@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import DataVisualizations from './DataVisualizations';
 import AdminInviteSection from './AdminInviteSection';
+import { AgeAnalysis } from './AgeAnalysis';
 import { getStoredResponses, exportSecureCSV } from '@/utils/supabaseStorage';
 import { useAuth } from './AuthWrapper';
 import { supabase } from '@/integrations/supabase/client';
@@ -204,7 +205,7 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               Overview
@@ -212,6 +213,10 @@ const AdminDashboard: React.FC = () => {
             <TabsTrigger value="analytics" className="flex items-center gap-2">
               <PieChart className="w-4 h-4" />
               Analytics
+            </TabsTrigger>
+            <TabsTrigger value="age-analysis" className="flex items-center gap-2">
+              <Users className="w-4 h-4" />
+              Age Analysis
             </TabsTrigger>
             <TabsTrigger value="responses" className="flex items-center gap-2">
               <TrendingUp className="w-4 h-4" />
@@ -281,6 +286,10 @@ const AdminDashboard: React.FC = () => {
 
           <TabsContent value="analytics">
             <DataVisualizations responses={transformDataForVisualization(surveyResponses)} />
+          </TabsContent>
+
+          <TabsContent value="age-analysis">
+            <AgeAnalysis responses={surveyResponses} />
           </TabsContent>
 
           <TabsContent value="responses">

@@ -13,7 +13,10 @@ const demographicQuestions: Question[] = [
     id: 'age',
     type: 'dropdown',
     question: 'What is your age?',
-    options: ['18–24', '25–34', '35–44', '45–54', '55–64', '65 or older'],
+    options: [
+      ...Array.from({ length: 82 }, (_, i) => (i + 18).toString()), // 18-99
+      '99+'
+    ],
     required: true,
   },
   {
