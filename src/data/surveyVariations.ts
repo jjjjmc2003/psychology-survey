@@ -68,10 +68,10 @@ const generateImageQuestions = (imageGroup: 'A' | 'B'): Question[] => [
     type: 'image-display',
     question: imageGroup === 'A' 
       ? '' 
-      : 'GROUP B – Unedited + Edited Images',
+      : '',
     instruction: imageGroup === 'A' 
       ? 'Please view the following 5 images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.'
-      : 'Please view the following 5 sets of images. Each set shows the original image followed by an edited version. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.',
+      : 'Please view the following 5 images. Afterward, you\'ll be asked a few questions about your perceptions and attitudes.',
     imageGroup: imageGroup,
     required: true,
   },
