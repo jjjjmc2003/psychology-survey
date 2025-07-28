@@ -128,7 +128,7 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
         
         const imageToShow = question.imageGroup === 'A' 
           ? getGroupAImage()
-          : '/lovable-uploads/group-b-new.png';
+          : '/lovable-uploads/0c036206-3b53-4d19-99ec-8373c87993d4.png';
         return (
           <div className="space-y-6">
             {question.instruction && (
