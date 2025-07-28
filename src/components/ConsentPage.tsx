@@ -93,12 +93,29 @@ social comparison may shape personal attitudes and behaviors.</p>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Participants to Partake in the Study</h4>
-                <p className="text-gray-600">We anticipate recruiting approximately 200 participants for this study. To participate, you must be at least 18 years old, have normal or corrected-to-normal vision, and be able to read and understand English. There are no other specific eligibility requirements for participation.</p>
+                <p className="text-gray-600">Participants must be 18 years of age or older, identify as female, and use
+social media at least once a week. Those who meet these eligibility criteria are
+welcome to participate.</p>
               </div>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Study Procedures</h4>
-                <p className="text-gray-600">This study requires one session lasting approximately 15-20 minutes and can be completed entirely online from your preferred location. During the study, you will view a series of images presented on your computer screen and answer questions about what you see. The order in which images are shown will be randomized for experimental purposes. Your responses will be collected through an online survey system. The procedures are experimental in nature, designed to test how image presentation order affects responses. No personal records will be accessed or required for this study.</p>
+                <p className="text-gray-600">The total duration of participation is 10–15 minutes. Participants will be asked
+to:
+1. Provide your consent to participate in the study.
+2. Answer a short set of demographic questions, such as your age, gender
+identity, ethnicity, and social media usage.
+3. Be randomly assigned to one of two groups:
+Group A: View 5 unedited images of women.
+Group B: View the same 5 unedited images followed by edited versions
+of each.
+4. Complete a brief online questionnaire, which includes:
+The Sociocultural Attitudes Towards Appearance Questionnaire
+(SATAQ),
+The Body Dysmorphic Disorder Questionnaire (BDDQ),
+Questions assessing your interest in cosmetic procedures.
+All procedures will take place online in a single session and are experimental
+in nature. No personal medical or academic records will be accessed.</p>
               </div>
 
               <div>
