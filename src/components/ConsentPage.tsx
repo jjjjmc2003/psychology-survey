@@ -84,7 +84,11 @@ Risks are minimal. You may experience mild emotional discomfort when evaluating 
               
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Purpose of this Study</h4>
-                <p className="text-gray-600">This study aims to understand how the sequence in which images are presented to participants influences their responses and choices. By varying the order of image presentation, we hope to gain insights into cognitive processes and potential biases that may occur during visual information processing in survey contexts.</p>
+                <p className="text-gray-600">This study aims to examine how social media images. Specifically edited
+beauty content may influence body image satisfaction and an individuals
+openness to cosmetic enhancement procedures. By comparing reactions to
+unedited versus edited images, the research hopes to better understand how
+social comparison may shape personal attitudes and behaviors.</p>
               </div>
 
               <div>
