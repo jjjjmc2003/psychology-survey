@@ -8,8 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import groupAImages from '@/assets/group-a-images.png';
-import groupBImages from '@/assets/group-b-images.png';
 
 export interface Question {
   id: string;
@@ -117,15 +115,9 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
         );
 
       case 'image-display':
-        // Randomly select between Group A image and available alternatives
-        const getGroupAImage = () => {
-          // For now, using the same Group A image - can add more variations later
-          return groupAImages;
-        };
-        
         const imageToShow = question.imageGroup === 'A' 
-          ? getGroupAImage()
-          : groupBImages;
+          ? '/lovable-uploads/b4e15463-8c57-4a26-be66-1b1105f76ec8.png'
+          : '/lovable-uploads/95ad6e7d-2e88-4d17-baf5-62d95e42aed3.png';
         return (
           <div className="space-y-6">
             {question.instruction && (
