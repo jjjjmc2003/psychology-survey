@@ -62,10 +62,25 @@ const ConsentPage: React.FC = () => {
               <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
                 <h4 className="font-bold mb-3 text-green-800 text-base">Key Information</h4>
                 <div className="space-y-3 text-gray-700">
-                  <p>There are some things that you should know about this study. The purpose of this study is to examine how the order of image presentation affects participants' responses and decision-making patterns in survey environments.</p>
-                  <p>If you choose to participate in this study, you will be asked to complete an online survey that includes viewing images and answering related questions. The survey will take approximately 15-20 minutes to complete and can be done from any location with internet access.</p>
-                  <p>The risks associated with this study are minimal and are no greater than those encountered in daily life. You may experience minor fatigue from viewing images and answering questions on a computer screen.</p>
-                  <p>There are no direct personal benefits to participating in this study. However, the results may contribute to our understanding of human perception and decision-making processes in digital environments.</p>
+                  <p>There are some things that you should know about this study. The purpose of
+this study is to investigate whether exposure to edited versus unedited beauty
+content on social media affects body image perception and interest in cosmetic
+procedures  .
+If you choose to participate in this study, you will be asked to view a series of
+images and then complete a survey. The study will be conducted online and
+will take approximately 10–15 minutes of your time. Participants will be
+randomly assigned to one of two conditions: one group will view unedited
+images of women, while the other group will view both the unedited and
+digitally edited versions of the same images. After viewing, all participants will
+answer questions about body image, societal beauty pressures, and attitudes
+toward cosmetic procedures.
+Risks are minimal. You may experience mild emotional discomfort when
+evaluating your body image. However, this risk is assumed to be no greater
+than what one might experience from regular social media exposure.
+There are no direct benefits to you for participating in this study .</p>
+                  
+                  
+                  
                 </div>
               </div>
 
