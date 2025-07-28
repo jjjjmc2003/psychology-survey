@@ -100,52 +100,69 @@ welcome to participate.</p>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Study Procedures</h4>
-                <p className="text-gray-600">The total duration of participation is 10–15 minutes. Participants will be asked
-to:
+                <p className="text-gray-600">The total duration of participation is 10–15 minutes. Participants will be asked to:
 1. Provide your consent to participate in the study.
-2. Answer a short set of demographic questions, such as your age, gender
-identity, ethnicity, and social media usage.
+
+2. Answer a short set of demographic questions, such as your age, gender identity, ethnicity, and social media usage.
+
 3. Be randomly assigned to one of two groups:
-Group A: View 5 unedited images of women.
-Group B: View the same 5 unedited images followed by edited versions
-of each.
+                                 Group A: View 5 unedited images of women.
+                                 Group B: View the same 5 unedited images followed by edited versions of each.
+
 4. Complete a brief online questionnaire, which includes:
-The Sociocultural Attitudes Towards Appearance Questionnaire
-(SATAQ),
-The Body Dysmorphic Disorder Questionnaire (BDDQ),
-Questions assessing your interest in cosmetic procedures.
-All procedures will take place online in a single session and are experimental
-in nature. No personal medical or academic records will be accessed.</p>
+                        The Sociocultural Attitudes Towards Appearance Questionnaire (SATAQ), The Body Dysmorphic Disorder                            Questionnaire (BDDQ), Questions assessing your interest in cosmetic procedures.
+
+All procedures will take place online in a single session and are experimental in nature. No personal medical or academic records will be accessed.</p>
               </div>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Risks and Discomforts</h4>
                 <div className="space-y-3 text-gray-600">
-                  <p>The risks associated with this study are minimal because the procedures involve only viewing images and answering survey questions, which are similar to everyday activities such as browsing websites or social media. Potential risks include minor eye strain or fatigue from computer screen viewing. There is a minimal risk of breach of confidentiality, though this is minimized by collecting only non-identifiable response data and using secure data storage systems.</p>
-                  <p>You have the right to skip any questions you do not wish to answer or to discontinue participation at any time without penalty.</p>
-                  <p>Risk is considered minimal because the study procedures are no more harmful or stressful than activities encountered in daily life, such as using a computer or smartphone.</p>
+                  <p>This study poses minimal risk to participants. Viewing images of other
+individuals may cause mild discomfort or negative self-reflection. These
+reactions are similar to what is experienced when browsing social media
+platforms. You may skip any questions you are uncomfortable answering or
+discontinue participation at any time.
+All data will be collected anonymously, reducing risk to your personal
+information. No identifying information will be stored or linked to your
+responses.</p>
+                  
+                  
                 </div>
               </div>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Benefits</h4>
-                <p className="text-gray-600">There may not be any personal benefits in participating in this study. However, your participation will contribute to scientific understanding of human perception and decision-making processes, which may ultimately benefit society by improving how visual information is presented in educational, medical, and other important contexts.</p>
+                <p className="text-gray-600">There may not be any personal benefits in participating in this study. However,
+this research may contribute to a better understanding of how social media and
+image editing influence women&#39;s body image and decision-making about beauty standards and cosmetic procedures.</p>
               </div>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Financial (or other) Considerations</h4>
-                <p className="text-gray-600">There are no financial requirements or benefits in participating in this study. You will not receive any compensation for your participation, nor will you incur any costs. The researchers and Keiser University may benefit academically from the knowledge gained through this research, but there are no financial benefits to the investigators or institution from this study.</p>
+                <p className="text-gray-600">There are no financial requirements or benefits in participating in this study.</p>
               </div>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Confidentiality and Protection of Information</h4>
-                <p className="text-gray-600">Your responses will be kept confidential and will be stored securely in encrypted databases. When presenting or publishing the results of this study, no personally identifying information will be included. Data collected will include only your survey responses and the time stamps of your participation. Your name and electronic signature will be stored separately from your survey responses to protect your privacy. All data will be retained for a minimum of three years as required by federal regulations and then securely destroyed.</p>
+                <p className="text-gray-600">All responses will be collected anonymously through an online survey tool. No
+names, emails, or identifying data will be linked to survey responses. The
+findings may be published or presented but will never contain any information
+that could identify individual participants. All data will be stored on a secure,
+password-protected computer accessible only by the research team.</p>
               </div>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Other considerations and Questions</h4>
                 <div className="space-y-3 text-gray-600">
-                  <p>Please feel free to ask any questions about anything that seems unclear to you and to consider this research and consent form carefully before you sign.</p>
+                  <p>Please feel free to ask any questions about anything that seems unclear to you
+and to consider this research and consent form carefully before you sign.
+Should you agree to participate in this study, you are free to leave the
+study at any time without penalty. In addition, if after you participate you
+decide you do not want your information included in the study, contact
+the researcher(s) and your information will be deleted without
+consequence. However, if your information was already used in the
+analysis of the study, this will not be possible.</p>
                   <p>There are no alternative treatments or interventions associated with this study, as it is observational research involving survey responses only.</p>
                   <p>Should you agree to participate in this study, you are free to leave the study at any time without penalty. In addition, if after you participate you decide you do not want your information included in the study, contact the researcher(s) and your information will be deleted without consequence. However, if your information was already used in the analysis of the study, this will not be possible.</p>
                 </div>
