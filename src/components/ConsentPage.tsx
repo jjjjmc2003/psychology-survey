@@ -48,7 +48,7 @@ const ConsentPage: React.FC = () => {
               <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
                 <h4 className="font-bold text-blue-800 text-base mb-3">Study Information</h4>
                 <div className="space-y-2">
-                  <p><strong>Title of Study:</strong> The Psychological Impact of Edited Beauty Content on Social Media.</p>
+                  <p className="font-bold text-slate-950"><strong>Title of Study:</strong> The Psychological Impact of Edited Beauty Content on Social Media.</p>
                   <p><strong>Principal Investigator:</strong> Martha Castillo, B.A., Student Investigator, Keiser University</p>
                   <p><strong>Co-Investigator(s) or Faculty Advisor:</strong> Dr. Lori Daniels, Ph.D., Keiser University (Faculty Advisor) Dr. Jennifer Danilowski, Ph.D., Keiser University (Committee Member) Dr. Steven Whitaker, Ph.D., Keiser University (Committee Member)</p>
                 </div>
