@@ -155,22 +155,18 @@ password-protected computer accessible only by the research team.</p>
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">Other considerations and Questions</h4>
                 <div className="space-y-3 text-gray-600">
-                  <p>Please feel free to ask any questions about anything that seems unclear to you
-and to consider this research and consent form carefully before you sign.
-Should you agree to participate in this study, you are free to leave the
-study at any time without penalty. In addition, if after you participate you
-decide you do not want your information included in the study, contact
-the researcher(s) and your information will be deleted without
-consequence. However, if your information was already used in the
-analysis of the study, this will not be possible.</p>
-                  <p>There are no alternative treatments or interventions associated with this study, as it is observational research involving survey responses only.</p>
-                  <p>Should you agree to participate in this study, you are free to leave the study at any time without penalty. In addition, if after you participate you decide you do not want your information included in the study, contact the researcher(s) and your information will be deleted without consequence. However, if your information was already used in the analysis of the study, this will not be possible.</p>
+                  <p>Please feel free to ask any questions about anything that seems unclear to you and to consider this research and consent form carefully before you sign.</p>
+                  
+                  <p className="font-bold text-sm text-slate-950"> Should you agree to participate in this study, you are free to leave the study at any time without penalty. In addition, if after you participate you decide you do not want your information included in the study, contact the researcher(s) and your information will be deleted without consequence. However, if your information was already used in the analysis of the study, this will not be possible.</p>
                 </div>
               </div>
 
               <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">IRB Certification</h4>
-                <p className="text-gray-600">I understand that this research study has been reviewed and certified by the Institutional Review Board at Keiser University. For research-related problems, or questions regarding participants' rights, I can contact the Institutional Review Board through the IRB Chairperson at (954) 318-1620.</p>
+                <p className="text-gray-600">I understand that this research study has been reviewed and certified by the
+Institutional Review Board at Keiser University. For research-related problems,
+or questions regarding participants&#39; rights, I can contact the Institutional
+Review Board through the IRB Chairperson at (954) 318-1620.</p>
               </div>
             </div>
           </CardContent>
@@ -188,7 +184,11 @@ analysis of the study, this will not be possible.</p>
             <div className="bg-white p-6 rounded-lg border border-blue-100">
               <h4 className="font-bold mb-4 text-gray-800 text-base">Authorization</h4>
               <div className="space-y-3 text-gray-600 text-sm">
-                <p>I understand the explanation provided to me. I have had all my questions answered to my satisfaction, and I voluntarily agree to participate in this study. I have been given a copy of this consent form. If I do not participate, there will be no penalty or loss of rights. I can stop participating at any time, even after I have started.</p>
+                <p>I understand the explanation provided to me. I have had all my questions
+answered to my satisfaction, and I voluntarily agree to participate in this study.
+I have been given a copy of this consent form. If I do not participate, there will
+be no penalty or loss of rights. I can stop participating at any time, even after I
+have started.</p>
                 <p className="font-semibold text-blue-700">I agree to participate in the study. Clicking the consent button below indicates that I have received a copy of this consent form.</p>
               </div>
             </div>
