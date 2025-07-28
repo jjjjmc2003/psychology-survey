@@ -121,14 +121,12 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
         // Randomly select between two Group A images
         const getGroupAImage = () => {
           const randomChoice = Math.floor(Math.random() * 2);
-          return randomChoice === 0 
-            ? '/lovable-uploads/9b44d1b9-8638-46a4-ac79-71c85842b006.png'
-            : '/lovable-uploads/3aeb7f63-410a-434e-8298-635db703e8d7.png';
+          return randomChoice === 0 ? groupAImages : groupAImagesAlt;
         };
         
         const imageToShow = question.imageGroup === 'A' 
           ? getGroupAImage()
-          : '/lovable-uploads/cc2adcac-576b-4f7a-bd78-aed90d6793ad.png';
+          : groupBImages;
         return (
           <div className="space-y-6">
             {question.instruction && (
@@ -141,6 +139,8 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
                 src={imageToShow} 
                 alt={`Survey images - Group ${question.imageGroup}`}
                 className="max-w-full h-auto rounded-lg shadow-lg"
+                onLoad={() => console.log('Image loaded successfully:', imageToShow)}
+                onError={(e) => console.error('Image failed to load:', imageToShow, e)}
               />
             </div>
             <div className="text-center">
