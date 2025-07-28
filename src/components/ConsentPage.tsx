@@ -5,36 +5,25 @@ import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
 import { FileText, ChevronDown, Shield, Lock } from 'lucide-react';
 import keiserLogo from '@/assets/keiser-logo.png';
-
 const ConsentPage: React.FC = () => {
   const navigate = useNavigate();
   const consentRef = useRef<HTMLDivElement>(null);
-
   const handleConsent = () => {
     navigate('/survey');
   };
-
   const scrollToConsent = () => {
-    consentRef.current?.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'center' 
+    consentRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
     });
   };
-
   const handleAdminLogin = () => {
     navigate('/admin/auth');
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+  return <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Floating Action Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={scrollToConsent}
-          size="lg"
-          className="rounded-full h-14 w-14 shadow-lg bg-blue-600 hover:bg-blue-700 text-white"
-          title="Scroll to consent section"
-        >
+        <Button onClick={scrollToConsent} size="lg" className="rounded-full h-14 w-14 shadow-lg bg-blue-600 hover:bg-blue-700 text-white" title="Scroll to consent section">
           <ChevronDown className="w-6 h-6" />
         </Button>
       </div>
@@ -44,11 +33,7 @@ const ConsentPage: React.FC = () => {
         <Card className="mb-8 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
           <CardContent className="pt-8">
             <div className="text-center">
-              <img 
-                src={keiserLogo} 
-                alt="Keiser University Logo" 
-                className="w-24 h-24 mx-auto mb-6"
-              />
+              <img src={keiserLogo} alt="Keiser University Logo" className="w-24 h-24 mx-auto mb-6" />
               <h1 className="text-2xl font-bold mb-2 text-gray-800">KEISER UNIVERSITY</h1>
               <h2 className="text-xl font-bold mb-2 text-gray-700">INSTITUTIONAL REVIEW BOARD</h2>
               <h3 className="text-lg font-bold text-blue-600">INFORMED CONSENT FORM</h3>
@@ -165,18 +150,11 @@ const ConsentPage: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              <Button 
-                onClick={handleConsent}
-                className="w-full py-6 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-xl shadow-lg"
-              >
+              <Button onClick={handleConsent} className="w-full py-6 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-xl shadow-lg">
                 ✓ I Consent to Participate in This Study
               </Button>
               
-              <Button 
-                variant="outline" 
-                onClick={() => window.close()}
-                className="w-full py-4 text-gray-600 border-2 border-gray-300 hover:bg-gray-50 font-semibold"
-              >
+              <Button variant="outline" onClick={() => window.close()} className="w-full py-4 text-gray-600 border-2 border-gray-300 hover:bg-gray-50 font-semibold">
                 I Do Not Wish to Participate
               </Button>
             </div>
@@ -184,16 +162,16 @@ const ConsentPage: React.FC = () => {
             <Separator className="my-6" />
 
             <div className="text-xs text-gray-500 space-y-2">
-              <p>If you have further questions about this research project, please contact the student investigator, Martha Castillo, at mcastillo@keiseru.edu or the faculty advisor, Dr. Lory Daniels, at ldaniels@keiseru.edu. If you have questions about your rights as a research participant or if you have a research related complaint, please contact The IRB Chairperson at: (954) 318-1620.</p>
-              <p>The participant will be given one copy of this consent form. One copy of this form is to be kept by the investigator for the duration of the study.</p>
+              <p className="text-sm">If you have further questions about this research project, please contact the principal investigator, Martha Castillo , at
+(305) 975-9801 , e-mail: m.castillo35@student.keiseruniversity.edu or the research supervisor, Dr. Lori Daniels , at
+(561) 478-5500 , e-mail: ldaniels@keiseruniversity.edu . If you have questions about your rights as a research participant or if you have a research related complaint, please contact The IRB Chairperson at: (954) 318-1620.
+
+The participant will be given one copy of this consent form. One copy of this form is to be kept by the investigator for the duration of the study.</p>
+              
             </div>
 
             <div className="pt-6 border-t border-gray-200">
-              <Button 
-                onClick={handleAdminLogin}
-                variant="outline"
-                className="w-full py-3 bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200 hover:from-slate-100 hover:to-gray-100 hover:border-slate-300 text-slate-700 hover:text-slate-800 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
-              >
+              <Button onClick={handleAdminLogin} variant="outline" className="w-full py-3 bg-gradient-to-r from-slate-50 to-gray-50 border-2 border-slate-200 hover:from-slate-100 hover:to-gray-100 hover:border-slate-300 text-slate-700 hover:text-slate-800 font-medium transition-all duration-200 shadow-sm hover:shadow-md">
                 <div className="flex items-center justify-center gap-2">
                   <Shield className="w-4 h-4" />
                   <span>Administrator Access</span>
@@ -204,8 +182,6 @@ const ConsentPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default ConsentPage;
