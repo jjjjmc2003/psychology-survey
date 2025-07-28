@@ -105,14 +105,10 @@ welcome to participate.</p>
 
 2. Answer a short set of demographic questions, such as your age, gender identity, ethnicity, and social media usage.
 
-3. Be randomly assigned to one of two groups:
-                                 Group A: View 5 unedited images of women.
-                                 Group B: View the same 5 unedited images followed by edited versions of each.
+3. Be randomly assigned to one of two groups:                                                                                                                                                               Group A: View 5 unedited images of women.                                  
+                                       Group B: View the same 5 unedited images followed by edited versions of each.
 
-4. Complete a brief online questionnaire, which includes:
-                        The Sociocultural Attitudes Towards Appearance Questionnaire (SATAQ), The Body Dysmorphic Disorder                            Questionnaire (BDDQ), Questions assessing your interest in cosmetic procedures.
-
-All procedures will take place online in a single session and are experimental in nature. No personal medical or academic records will be accessed.</p>
+4. Complete a brief online questionnaire, which includes:                                                                                                                                  The Sociocultural Attitudes Towards Appearance Questionnaire (SATAQ), The Body Dysmorphic Disorder                            Questionnaire (BDDQ), Questions assessing your interest in cosmetic procedures. All procedures will take place online in a single session and are experimental in nature. No personal medical or academic records will be accessed.</p>
               </div>
 
               <div>
