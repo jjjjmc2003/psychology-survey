@@ -11,7 +11,7 @@ export interface SurveyVariation {
 const demographicQuestions: Question[] = [
   {
     id: 'age',
-    title: "Questions 1-6 will be about yourself"
+    title: 'Questions 1-6 will be about yourself'
     type: 'dropdown',
     question: 'What is your age?'
     options: [
