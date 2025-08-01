@@ -145,8 +145,8 @@ const bissQuestions: Question[] = [
 const acssQuestions: Question[] = [
   {
     id: 'acss-enhance-self-image',
-    title: 'In this section you will be asked to respond to 15 statements. These statements reflect personal beliefs, perceived social norms, and likelihood of considering surgery. Please respond based on your general beliefs or hypothetical considerations, not necessarily your past actions.',
-    type: 'rating',
+    title: '(In this section you will be asked to respond to 15 statements. These statements reflect personal beliefs, perceived social norms, and likelihood of considering surgery. Please respond based on your general beliefs or hypothetical considerations, not necessarily your past actions.',
+    type: 'rating)',
     question: 'It makes sense to have cosmetic surgery to enhance self-image.',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
