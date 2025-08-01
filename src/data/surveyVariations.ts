@@ -282,7 +282,7 @@ export const generateRandomizedSurvey = (): SurveyVariation => {
   return {
     id: `body-image-surgery-study-group-${imageGroup}`,
     title: 'The Impact of Edited Beauty-Related Content on Body Image Satisfaction and Acceptance of Cosmetic Procedures',
-    description: 'A research study examining the relationship between body image, social media usage, and attitudes toward cosmetic surgery',
+    description: 'Principal Investigator: Martha Castillo, B.A., Student Investigator, Keiser University \n Co-Investigator(s) or Faculty Advisor: Dr. Lori Daniels, Ph.D., Keiser University (Faculty Advisor) Dr. Jennifer Danilowski, Ph.D., Keiser University (Committee Member) Dr. Steven Whitaker, Ph.D., Keiser University (Committee Member)',
     questions: allQuestions,
   };
 };
