@@ -140,7 +140,6 @@ const RandomizedSurvey: React.FC = () => {
             <CardTitle className="text-2xl font-bold text-gray-800 mb-2">
               {currentSurvey.title}
             </CardTitle>
-            <p className="text-gray-600">{currentSurvey.description}</p>
             <p className="text-sm text-green-600 mt-2">
               Anonymous Participation
             </p>
