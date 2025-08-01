@@ -281,7 +281,7 @@ export const generateRandomizedSurvey = (): SurveyVariation => {
   
   return {
     id: `body-image-surgery-study-group-${imageGroup}`,
-    title: 'Body Image and Cosmetic Surgery Attitudes Study',
+    title: 'The Impact of Edited Beauty-Related Content on Body Image Satisfaction and Acceptance of Cosmetic Procedures',
     description: 'A research study examining the relationship between body image, social media usage, and attitudes toward cosmetic surgery',
     questions: allQuestions,
   };
