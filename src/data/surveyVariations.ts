@@ -81,7 +81,7 @@ const generateImageQuestions = (imageGroup: 'A' | 'B'): Question[] => [
   },
   {
     id: 'women-count',
-    title: '(Section 1: Body Image State Scale (BISS). This section asks you how you feel right now, at this very moment about your physical appearance. You will be presented with 6 items. For each item, please select the response that best reflects how you feel at this exact moment.Please answer each item based on your current feelings, not how you usually feel or how you wish you felt.)',
+    title: '(This section asks you how you feel right now, at this very moment about your physical appearance. You will be presented with 6 items. For each item, please select the response that best reflects how you feel at this exact moment.Please answer each item based on your current feelings, not how you usually feel or how you wish you felt.)',
     type: 'multiple-choice',
     question: 'How many women were you shown?',
     options: ['1', '2', '3', '4', '5'],
