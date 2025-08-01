@@ -81,7 +81,6 @@ const generateImageQuestions = (imageGroup: 'A' | 'B'): Question[] => [
   },
   {
     id: 'women-count',
-    title: '(In this section, you will be presented with 6 items. For each item, please select the response that best reflects how you feel at this exact moment.Please answer each item based on your current feelings, not how you usually feel or how you wish you felt.)',
     type: 'multiple-choice',
     question: 'How many women were you shown?',
     options: ['1', '2', '3', '4', '5'],
@@ -93,6 +92,7 @@ const generateImageQuestions = (imageGroup: 'A' | 'B'): Question[] => [
 const bissQuestions: Question[] = [
   {
     id: 'biss-satisfied-appearance',
+    title: '(In this section, you will be presented with 6 items. For each item, please select the response that best reflects how you feel at this exact moment.Please answer each item based on your current feelings, not how you usually feel or how you wish you felt.)',
     type: 'rating',
     question: 'I feel satisfied with my appearance.',
     instruction: 'Please rate how you feel right now using the scale below.',
