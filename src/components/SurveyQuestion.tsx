@@ -209,6 +209,7 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
         <CardHeader className="pb-4">
           <CardTitle className="text-xl font-semibold text-gray-800">
             {question.title}
+            {break}
             {question.question}
             {question.required && <span className="text-red-500 ml-1">*</span>}
           </CardTitle>
