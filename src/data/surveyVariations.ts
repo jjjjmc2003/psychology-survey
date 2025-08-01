@@ -13,7 +13,7 @@ const demographicQuestions: Question[] = [
     id: 'age',
     title: 'Questions 1-6 will be about yourself',
     type: 'dropdown',
-    question: 'What is your age?'
+    question: 'What is your age?',
     options: [
       ...Array.from({ length: 82 }, (_, i) => (i + 18).toString()), // 18-99
       '99+'
