@@ -163,7 +163,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-feel-better',
     type: 'rating',
-    question: 'It is reasonable to have cosmetic surgery if it can make you feel better about yourself.',
+    question: 'Cosmetic surgery is a good thing because it can help people feel better about themselves In the future, I could end up having some kind of cosmetic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
