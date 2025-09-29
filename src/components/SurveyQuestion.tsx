@@ -19,6 +19,7 @@ export interface Question {
   imageSrc?: string;
   instruction?: string;
   scale?: { min: number; max: number; labels?: string[] };
+  title?: string;
 }
 
 interface SurveyQuestionProps {
