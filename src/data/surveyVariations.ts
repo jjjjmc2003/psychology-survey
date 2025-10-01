@@ -149,7 +149,7 @@ const acssQuestions: Question[] = [
     type: 'rating',
     question: 'It makes sense to have minor cosmetic surgery rather than spending years feeling bad about the way you look',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
-    scale: { min: 1, max: 9, labels: ['Not at all', 'Extremely'] },
+    scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
   },
   {
