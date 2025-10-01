@@ -163,7 +163,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-feel-better',
     type: 'rating',
-    question: 'Cosmetic surgery is a good thing because it can help people feel better about themselves.',
+    question: 'In the future, I could end up having some kind of cosmetic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -171,7 +171,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-career-benefit',
     type: 'rating',
-    question: 'If it would benefit my career, I would think about having cosmetic surgery.',
+    question: 'People who are very unhappy with their physical appearance should consider cosmetic surgery as one option',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -179,7 +179,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-attractive-others',
     type: 'rating',
-    question: 'I would seriously consider having cosmetic surgery if I thought it would make me more attractive to others.',
+    question: 'If cosmetic surgery can make someone happier with the way they look, then they should try it',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -187,7 +187,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-relationship',
     type: 'rating',
-    question: 'I would think about having cosmetic surgery if it helped me get or keep a relationship.',
+    question: 'If I could have a surgical procedure done for free I would consider trying cosmetic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -195,7 +195,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-never-consider',
     type: 'rating',
-    question: 'I would never consider having cosmetic surgery.',
+    question: 'If I knew there would be no negative side effects or pain, I would like to try cosmetic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -203,7 +203,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-sometimes-thought',
     type: 'rating',
-    question: 'I have sometimes thought about having cosmetic surgery.',
+    question: '8. I have sometimes thought about having cosmetic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -211,7 +211,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-might-consider',
     type: 'rating',
-    question: 'I might consider having cosmetic surgery in the future.',
+    question: 'I would seriously consider having cosmetic surgery if my partner thought it was a good idea',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -219,7 +219,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-no-side-effects',
     type: 'rating',
-    question: 'If I knew there would be no negative side effects or pain, I would consider cosmetic surgery.',
+    question: 'I would never have any kind of plastic surgery (R)',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -227,7 +227,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-if-free',
     type: 'rating',
-    question: 'If cosmetic surgery were free, I would consider trying it.',
+    question: 'I would think about having cosmetic surgery in order to keep looking young',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -235,7 +235,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-not-embarrassed',
     type: 'rating',
-    question: 'I would not be embarrassed if people knew I had cosmetic surgery.',
+    question: 'If it would benefit my career I would think about having plastic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -243,7 +243,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-positive-psychological',
     type: 'rating',
-    question: 'I believe that cosmetic surgery can have positive psychological effects.',
+    question: 'I would seriously consider having cosmetic surgery if I thought my partner would find me more attractive',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -251,7 +251,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-unhappy-should-consider',
     type: 'rating',
-    question: 'People who are unhappy with their appearance should consider cosmetic surgery.',
+    question: "Cosmetic surgery can be a big benefit to people's self-image",
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -259,7 +259,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-good-option',
     type: 'rating',
-    question: 'Cosmetic surgery is a good option for people who want to improve their body.',
+    question: 'If a simple cosmetic surgery procedure would make me more attractive to others, I would think about trying it',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
