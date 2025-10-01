@@ -257,7 +257,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-sometimes-thought',
     type: 'rating',
-    question: '8. I have sometimes thought about having cosmetic surgery',
+    question: 'I have sometimes thought about having cosmetic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
@@ -273,7 +273,7 @@ const acssQuestions: Question[] = [
   {
     id: 'acss-no-side-effects',
     type: 'rating',
-    question: 'I would never have any kind of plastic surgery (R)',
+    question: 'I would never have any kind of plastic surgery',
     instruction: 'Please indicate how much you agree or disagree with each statement.',
     scale: { min: 1, max: 7, labels: ['Strongly Disagree', 'Strongly Agree'] },
     required: false,
