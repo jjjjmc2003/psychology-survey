@@ -139,6 +139,18 @@ password-protected computer accessible only by the research team.</p>
               </div>
 
               <div>
+                <h4 className="font-bold mb-3 text-gray-800 text-base">Mental Health Support and Helpline Information</h4>
+                <p className="text-gray-600">Although the risks of this study are minimal, topics related to beauty standards and body image can sometimes cause emotional discomfort. If you experience distress, sadness, or negative self-reflection during or after participating in this study, please know that help is available. You may contact any of the following confidential national resources for support:</p>
+                <ul className="list-disc pl-6 mt-3 space-y-2 text-gray-600">
+                  <li><strong>Suicide & Crisis Lifeline (24/7):</strong> Call or text 988</li>
+                  <li><strong>Crisis Text Line:</strong> Text HOME to 741741 (available 24/7)</li>
+                  <li><strong>National Alliance on Mental Illness (NAMI) Helpline:</strong> 1-800-950-NAMI (6264)</li>
+                  <li><strong>Psychology Today Therapist Finder:</strong> <a href="https://www.psychologytoday.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">www.psychologytoday.com</a></li>
+                </ul>
+                <p className="text-gray-600 mt-3">Your well-being is important. Please reach out to these services if you feel emotionally affected at any time.</p>
+              </div>
+
+              <div>
                 <h4 className="font-bold mb-3 text-gray-800 text-base">IRB Certification</h4>
                 <p className="text-gray-600">I understand that this research study has been reviewed and certified by the
 Institutional Review Board at Keiser University. For research-related problems,
