@@ -2,6 +2,7 @@ import { z } from "zod";
 
 // Simplified survey response validation schema
 export const surveyResponseSchema = z.object({
+  gender: z.string().optional(),
   sex: z.string().optional(),
   age: z.string().optional(),
   'depression-score': z.string().optional(),

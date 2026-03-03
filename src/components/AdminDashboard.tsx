@@ -12,6 +12,7 @@ import { AgeAnalysis } from './AgeAnalysis';
 import { getStoredResponses, exportSecureCSV } from '@/utils/supabaseStorage';
 import { useAuth } from './AuthWrapper';
 import { supabase } from '@/integrations/supabase/client';
+import { getParticipantGender, isWomanParticipant } from '@/utils/demographics';
 
 // Define the interface that matches our Supabase data structure
 interface AdminSurveyResponse {
@@ -223,11 +224,11 @@ const AdminDashboard: React.FC = () => {
                 
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">Female Participants</CardTitle>
+                    <CardTitle className="text-lg">Women Participants</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-bold text-pink-600">
-                      {surveyResponses.filter(r => r.responses.sex === 'Female').length}
+                      {surveyResponses.filter(r => isWomanParticipant(r.responses)).length}
                     </div>
                   </CardContent>
                 </Card>
@@ -286,65 +287,69 @@ const AdminDashboard: React.FC = () => {
                     <TableRow>
                       <TableHead>Response ID</TableHead>
                       <TableHead>Survey Variation</TableHead>
-                      <TableHead>Sex</TableHead>
+                      <TableHead>Gender</TableHead>
                       <TableHead>Age</TableHead>
                       <TableHead>Timestamp</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {surveyResponses.map((response) => (
-                      <TableRow key={response.id}>
-                        <TableCell className="font-mono text-sm">
-                          {response.id.slice(-8)}
-                        </TableCell>
-                        <TableCell>{response.survey_id}</TableCell>
-                        <TableCell>{response.responses.sex || 'N/A'}</TableCell>
-                        <TableCell>{response.responses.age || 'N/A'}</TableCell>
-                        <TableCell>{new Date(response.created_at).toLocaleString()}</TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => setSelectedResponse(response)}
-                            >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <Trash2 className="w-4 h-4 mr-1" />
-                                  Delete
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete this survey response.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleDeleteResponse(response.id)}
-                                    className="bg-red-600 hover:bg-red-700"
+                    {surveyResponses.map((response) => {
+                      const participantGender = getParticipantGender(response.responses);
+
+                      return (
+                        <TableRow key={response.id}>
+                          <TableCell className="font-mono text-sm">
+                            {response.id.slice(-8)}
+                          </TableCell>
+                          <TableCell>{response.survey_id}</TableCell>
+                          <TableCell>{participantGender === 'Unknown' ? 'N/A' : participantGender}</TableCell>
+                          <TableCell>{response.responses.age || 'N/A'}</TableCell>
+                          <TableCell>{new Date(response.created_at).toLocaleString()}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setSelectedResponse(response)}
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                   >
+                                    <Trash2 className="w-4 h-4 mr-1" />
                                     Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This action cannot be undone. This will permanently delete this survey response.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDeleteResponse(response.id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
                 {surveyResponses.length === 0 && (

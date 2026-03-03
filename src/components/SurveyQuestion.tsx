@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -35,6 +35,15 @@ interface SurveyQuestionProps {
   isLast: boolean;
 }
 
+const parseMultiSelectValue = (rawValue: string): string[] => {
+  try {
+    const parsed = rawValue ? JSON.parse(rawValue) : [];
+    return Array.isArray(parsed) ? parsed.filter(item => typeof item === 'string') : [];
+  } catch {
+    return [];
+  }
+};
+
 const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
   question,
   currentQuestion,
@@ -49,17 +58,20 @@ const SurveyQuestion: React.FC<SurveyQuestionProps> = ({
 }) => {
   const progress = ((currentQuestion + 1) / totalQuestions) * 100;
 
-  const [selectedOptions, setSelectedOptions] = useState<string[]>(() => {
-    try {
-      return value ? JSON.parse(value) : [];
-    } catch {
-      return [];
+  const [selectedOptions, setSelectedOptions] = useState<string[]>(() => parseMultiSelectValue(value));
+
+  useEffect(() => {
+    if (question.type !== 'multi-select') {
+      setSelectedOptions([]);
+      return;
     }
-  });
+
+    setSelectedOptions(parseMultiSelectValue(value));
+  }, [question.id, question.type, value]);
 
   const handleMultiSelectChange = (option: string, checked: boolean) => {
-    const newSelected = checked 
-      ? [...selectedOptions, option]
+    const newSelected = checked
+      ? Array.from(new Set([...selectedOptions, option]))
       : selectedOptions.filter(item => item !== option);
     setSelectedOptions(newSelected);
     onChange(JSON.stringify(newSelected));

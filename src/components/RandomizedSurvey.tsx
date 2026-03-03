@@ -192,6 +192,7 @@ const RandomizedSurvey: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
       <SurveyQuestion
+        key={currentQuestion.id}
         question={currentQuestion}
         currentQuestion={currentQuestionIndex}
         totalQuestions={currentSurvey.questions.length}

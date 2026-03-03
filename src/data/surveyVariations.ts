@@ -7,6 +7,17 @@ export interface SurveyVariation {
   questions: Question[];
 }
 
+export const SOCIAL_MEDIA_PLATFORM_OPTIONS = [
+  'Instagram',
+  'TikTok',
+  'Facebook',
+  'Snapchat',
+  'YouTube',
+  'Pinterest',
+  'Twitter/X',
+  'Other',
+];
+
 // Fixed demographic and social media questions
 const demographicQuestions: Question[] = [
   {
@@ -46,7 +57,7 @@ const demographicQuestions: Question[] = [
     id: 'social-media-platforms',
     type: 'multi-select',
     question: 'Which social media platforms do you use regularly? (Select all that apply)',
-    options: ['Instagram', 'TikTok', 'Facebook', 'Snapchat', 'YouTube', 'Twitter/X', 'Other'],
+    options: SOCIAL_MEDIA_PLATFORM_OPTIONS,
     required: false,
   },
   {
@@ -319,6 +330,12 @@ const acssQuestions: Question[] = [
     required: false,
   },
 ];
+
+export const BISS_QUESTION_IDS = bissQuestions.map(question => question.id);
+export const ACSS_QUESTION_IDS = acssQuestions.map(question => question.id);
+export const BISS_OPTIONS_BY_ID: Record<string, string[]> = Object.fromEntries(
+  bissQuestions.map(question => [question.id, question.options || []])
+);
 
 // Generate a survey with randomized image group
 export const generateRandomizedSurvey = (): SurveyVariation => {
